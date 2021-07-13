@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/login_nav"
+    app:startDestination="@id/splashFragment">
+
+    <fragment
+        android:id="@+id/login_signupFragment"
+        android:name="com.ahmed.moviesapp.ui.screens.start_app_screens.LoginSignupFragment"
+        android:label="fragment_signup"
+        tools:layout="@layout/fragment_login_signup" />
+    <fragment
+        android:id="@+id/splashFragment"
+        android:name="com.ahmed.moviesapp.ui.screens.start_app_screens.SplashFragment"
+        android:label="fragment_splash"
+        tools:layout="@layout/fragment_splash" >
+        <action
+            android:id="@+id/action_splashFragment_to_login_signupFragment"
+            app:destination="@id/login_signupFragment" />
+    </fragment>
+</navigation>

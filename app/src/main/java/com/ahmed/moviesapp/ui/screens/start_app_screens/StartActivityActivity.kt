@@ -1,19 +1,14 @@
-package com.ahmed.moviesapp.ui
+package com.ahmed.moviesapp.ui.screens.start_app_screens
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.activity.viewModels
 import com.ahmed.moviesapp.R
-import com.ahmed.moviesapp.ui.viewmodel.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
-
-    private val viewModel: MainViewModel by viewModels()
-
+class StartActivityActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_login)
     }
 }

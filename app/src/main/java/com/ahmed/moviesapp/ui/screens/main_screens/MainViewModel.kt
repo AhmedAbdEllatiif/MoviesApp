@@ -1,0 +1,50 @@
+package com.ahmed.moviesapp.ui.screens.main_screens
+
+import android.util.Log
+import androidx.lifecycle.*
+import androidx.paging.cachedIn
+import com.ahmed.moviesapp.data.FireBaseRepository
+import com.ahmed.moviesapp.data.MoviesPagingSource.Companion.STARTING_PAGE_INDEX
+import com.ahmed.moviesapp.data.Repository
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import dagger.hilt.android.lifecycle.HiltViewModel
+import javax.inject.Inject
+
+@HiltViewModel
+class MainViewModel @Inject constructor(
+    private val repository: Repository,
+    private val firebaseRepo: FireBaseRepository
+) : ViewModel() {
+
+
+     val isUserCreated = MutableLiveData(false)
+
+    private val moviesPageLiveData = MutableLiveData(STARTING_PAGE_INDEX)
+    val moviesPerPage = moviesPageLiveData.switchMap{ requiredPage ->
+        repository.getMovies(requiredPage).cachedIn(viewModelScope)
+    }
+
+
+    val isUserLoggedIn = firebaseRepo.isUserLoggedIn()
+
+
+    /*fun createNewUser(email:String, password:String):Boolean{
+        val user = firebaseRepo.createNewUser(email,password)
+        return user != null
+    }*/
+
+    fun createNewUser(email: String, password: String){
+        //var user : FirebaseUser? = null
+        firebaseRepo.auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                isUserCreated.value = task.isSuccessful
+            }
+
+    }
+
+
+    companion object {
+        private const val TAG = "MainViewModel"
+    }
+}

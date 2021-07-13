@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:defaultNavHost="true"
-    android:name="androidx.navigation.fragment.NavHostFragment"
+    android:name="com.ahmed.moviesapp.ui.MainNavHost"
     android:id="@+id/main_fragment_container"
     app:navGraph="@navigation/main_screen_nav">
 
