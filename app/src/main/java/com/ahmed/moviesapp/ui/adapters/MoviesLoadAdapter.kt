@@ -1,4 +1,4 @@
-package com.ahmed.moviesapp.ui
+package com.ahmed.moviesapp.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

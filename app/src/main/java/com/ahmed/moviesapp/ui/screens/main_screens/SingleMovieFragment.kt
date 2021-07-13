@@ -1,4 +1,4 @@
-package com.ahmed.moviesapp.ui.fragments
+package com.ahmed.moviesapp.ui.screens.main_screens
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment

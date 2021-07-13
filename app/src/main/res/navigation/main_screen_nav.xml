@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/moviesListFragment"
-        android:name="com.ahmed.moviesapp.ui.fragments.MoviesListFragment"
+        android:name="com.ahmed.moviesapp.ui.screens.main_screens.MoviesListFragment"
         android:label="fragment_movies_list"
         tools:layout="@layout/fragment_movies_list" >
         <action
@@ -16,7 +16,7 @@
     </fragment>
     <fragment
         android:id="@+id/singleMovieFragment"
-        android:name="com.ahmed.moviesapp.ui.fragments.SingleMovieFragment"
+        android:name="com.ahmed.moviesapp.ui.screens.main_screens.SingleMovieFragment"
         android:label="fragment_single_movie"
         tools:layout="@layout/fragment_single_movie" />
 </navigation>

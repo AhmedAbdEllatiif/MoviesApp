@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.fragments.MoviesListFragment"
+    tools:context=".ui.screens.main_screens.MoviesListFragment"
     android:layout_margin="5dp"
     >
 
@@ -14,5 +14,13 @@
         android:id="@+id/movies_rv"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
+
+    <Button
+        android:id="@+id/btn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:text="Make New Account"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,4 +1,4 @@
-package com.ahmed.moviesapp.ui.fragments
+package com.ahmed.moviesapp.ui.screens.main_screens
 
 import android.os.Bundle
 import android.util.Log
@@ -8,9 +8,8 @@ import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ahmed.moviesapp.R
 import com.ahmed.moviesapp.databinding.FragmentMoviesListBinding
-import com.ahmed.moviesapp.ui.MoviesAdapter
-import com.ahmed.moviesapp.ui.MoviesLoadAdapter
-import com.ahmed.moviesapp.ui.viewmodel.MainViewModel
+import com.ahmed.moviesapp.ui.adapters.MoviesAdapter
+import com.ahmed.moviesapp.ui.adapters.MoviesLoadAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -32,6 +31,8 @@ class MoviesListFragment : Fragment(R.layout.fragment_movies_list) {
         // initialize _binding
         _binding = FragmentMoviesListBinding.bind(view)
 
+
+
         // Bind with recyclerView
         binding.apply {
             moviesRv.setHasFixedSize(true)
@@ -40,6 +41,20 @@ class MoviesListFragment : Fragment(R.layout.fragment_movies_list) {
                 header = MoviesLoadAdapter{adapter.retry() },
                 footer = MoviesLoadAdapter{adapter.retry()},
             )
+
+            viewModel.isUserCreated.observe(viewLifecycleOwner,{ isUserCreated ->
+                if(isUserCreated){
+                    Log.e(TAG, "onViewCreated: New User Created" )
+                }else{
+                    Log.e(TAG, "onViewCreated: Failed to create new User" )
+
+                }
+
+            })
+
+            btn.setOnClickListener{
+               viewModel.createNewUser("ahmedmohamedaneng@gmail.com","123456")
+            }
         }
 
 
