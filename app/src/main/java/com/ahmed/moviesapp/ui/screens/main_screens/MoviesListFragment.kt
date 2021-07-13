@@ -41,20 +41,6 @@ class MoviesListFragment : Fragment(R.layout.fragment_movies_list) {
                 header = MoviesLoadAdapter{adapter.retry() },
                 footer = MoviesLoadAdapter{adapter.retry()},
             )
-
-            viewModel.isUserCreated.observe(viewLifecycleOwner,{ isUserCreated ->
-                if(isUserCreated){
-                    Log.e(TAG, "onViewCreated: New User Created" )
-                }else{
-                    Log.e(TAG, "onViewCreated: Failed to create new User" )
-
-                }
-
-            })
-
-            btn.setOnClickListener{
-               viewModel.createNewUser("ahmedmohamedaneng@gmail.com","123456")
-            }
         }
 
 

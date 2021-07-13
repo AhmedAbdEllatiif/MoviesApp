@@ -18,7 +18,7 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-     val isUserCreated = MutableLiveData(false)
+
 
     private val moviesPageLiveData = MutableLiveData(STARTING_PAGE_INDEX)
     val moviesPerPage = moviesPageLiveData.switchMap{ requiredPage ->
@@ -29,19 +29,7 @@ class MainViewModel @Inject constructor(
     val isUserLoggedIn = firebaseRepo.isUserLoggedIn()
 
 
-    /*fun createNewUser(email:String, password:String):Boolean{
-        val user = firebaseRepo.createNewUser(email,password)
-        return user != null
-    }*/
 
-    fun createNewUser(email: String, password: String){
-        //var user : FirebaseUser? = null
-        firebaseRepo.auth.createUserWithEmailAndPassword(email, password)
-            .addOnCompleteListener { task ->
-                isUserCreated.value = task.isSuccessful
-            }
-
-    }
 
 
     companion object {
