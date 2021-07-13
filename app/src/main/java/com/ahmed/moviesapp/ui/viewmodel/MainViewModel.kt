@@ -2,11 +2,11 @@ package com.ahmed.moviesapp.ui.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.*
+import androidx.paging.cachedIn
 import com.ahmed.moviesapp.data.MoviesPage
+import com.ahmed.moviesapp.data.MoviesPagingSource.Companion.STARTING_PAGE_INDEX
 import com.ahmed.moviesapp.data.Repository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -15,18 +15,10 @@ class MainViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    private val moviesLiveData = MutableLiveData<MoviesPage>()
-    val movies: LiveData<MoviesPage> = moviesLiveData
-    init {
-        Log.d(TAG, " init start  ")
-        viewModelScope.launch{
-            val movies = repository.getMovies()
-            delay(5000)
-            moviesLiveData.value = movies
-
-        }
+    private val moviesPageLiveData = MutableLiveData(STARTING_PAGE_INDEX)
+    val moviesPerPage = moviesPageLiveData.switchMap{ requiredPage ->
+        repository.getMovies(requiredPage).cachedIn(viewModelScope)
     }
-
 
 
 

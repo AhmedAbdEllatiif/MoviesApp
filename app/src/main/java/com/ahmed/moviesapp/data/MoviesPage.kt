@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName
  * */
 data class MoviesPage(
     @SerializedName("results")
-    val moviesList: List<MoviesList>? = null,
+    val movieItem: List<MovieItem>,
 
     @SerializedName("page")
     val current_page: Int = 0,
@@ -23,10 +23,12 @@ data class MoviesPage(
 /**
  * MoviesList is the result a list movies of every single page
  * */
-data class MoviesList(
+data class MovieItem(
     val id: Int = 0,
 
     val original_title: String = "",
+
+    val title: String = "",
 
     @SerializedName("poster_path")
     val movie_poster: String = "",
