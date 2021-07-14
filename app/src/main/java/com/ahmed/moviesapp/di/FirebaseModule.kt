@@ -29,7 +29,6 @@ object FirebaseModule {
 
     @Provides
     @Singleton
-    @Named(mainReference)
     fun provideDatabaseReference(database: FirebaseDatabase): DatabaseReference = database.reference
 
     @Provides

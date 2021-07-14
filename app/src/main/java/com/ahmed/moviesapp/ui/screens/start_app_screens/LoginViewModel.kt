@@ -8,13 +8,14 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ahmed.moviesapp.data.FireBaseRepository
+import com.ahmed.moviesapp.data.firebaseData.User
+import com.google.android.gms.tasks.Task
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel
 @Inject constructor(
-    private val application: Application,
     private val firebaseRepo: FireBaseRepository
 ) : ViewModel(), Observable {
 
@@ -48,8 +49,6 @@ class LoginViewModel
     private fun isPasswordsNotMatched() = inputPassword.value != inputRe_Password.value
 
 
-
-
     /**
      * To submit data to firebase
      * */
@@ -65,7 +64,7 @@ class LoginViewModel
 
         // submit data to signup
         else {
-            if(isSignupDataValid()){
+            if (isSignupDataValid()) {
                 updateUiState(LoginUiState.Loading)
                 createNewUser()
                 Log.i(TAG, "Email: ${inputEmail.value} \nPassword: ${inputPassword.value}")
@@ -104,6 +103,36 @@ class LoginViewModel
         firebaseRepo.auth.createUserWithEmailAndPassword(email!!, password!!)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
+                    addNewUserToDataBase()
+                } else {
+                    val error = if (task.exception == null) null else task.exception
+                    val errorMessage = if (error == null) "" else error.message
+                    updateUiState(LoginUiState.Failed(error = errorMessage!!))
+                }
+            }
+    }
+
+    /**
+     * @return new User
+     * */
+    private fun preparedUserData(): User? {
+        val currentUser = firebaseRepo.currentUser()
+        if (currentUser != null) {
+            val email = currentUser.email
+            val id = currentUser.uid
+            return User(id = id, email = email)
+        }
+        return null
+    }
+
+    /**
+     * To set the new user value to database
+     * */
+    private fun addNewUserToDataBase() {
+        val user = preparedUserData()
+        if (user != null) {
+            firebaseRepo.writeNewUser(user).addOnCompleteListener { task ->
+                if (task.isSuccessful) {
                     updateUiState(LoginUiState.SuccessfulSignUp)
                 } else {
                     val error = if (task.exception == null) null else task.exception
@@ -111,6 +140,7 @@ class LoginViewModel
                     updateUiState(LoginUiState.Failed(error = errorMessage!!))
                 }
             }
+        }
     }
 
 
@@ -140,7 +170,6 @@ class LoginViewModel
             return true
         }
     }
-
 
 
     /**
