@@ -1,7 +1,6 @@
 package com.ahmed.moviesapp.ui.screens.main_screens
 
 import android.os.Bundle
-import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.View
 import androidx.fragment.app.viewModels
@@ -31,8 +30,6 @@ class MoviesListFragment : Fragment(R.layout.fragment_movies_list) {
         // initialize _binding
         _binding = FragmentMoviesListBinding.bind(view)
 
-
-
         // Bind with recyclerView
         binding.apply {
             moviesRv.setHasFixedSize(true)
@@ -43,15 +40,31 @@ class MoviesListFragment : Fragment(R.layout.fragment_movies_list) {
             )
         }
 
-
-
         observeMoviesPerPage()
+
+        observerClickedMovieItem()
     }
 
+    /**
+     * To observe moviesList per page then submit data to the adapter
+     * */
     private fun observeMoviesPerPage(){
         viewModel.moviesPerPage.observe(viewLifecycleOwner, { pagingMovie ->
             adapter.submitData(viewLifecycleOwner.lifecycle,pagingMovie)
         })
+    }
+
+
+    /**
+     * To observe the movie item clicked by user
+     * */
+    private fun observerClickedMovieItem(){
+        adapter.movieItemLiveData.observe(viewLifecycleOwner, { movieItem ->
+            if (movieItem != null) {
+                viewModel.updateOrWriteNavMovie(movieItem)
+            }
+        })
+
     }
 
 

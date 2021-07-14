@@ -15,7 +15,6 @@ import javax.inject.Singleton
 @Module
 object FirebaseModule {
 
-    const val mainReference:String = "MainDataReference"
     const val usersReference:String = "UsersReference"
     const val navigationReference:String = "NavigationReference"
 
