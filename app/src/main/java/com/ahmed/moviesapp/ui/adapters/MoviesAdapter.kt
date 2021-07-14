@@ -2,6 +2,8 @@ package com.ahmed.moviesapp.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -11,6 +13,8 @@ import com.ahmed.moviesapp.databinding.MovieItemBinding
 class MoviesAdapter :
     PagingDataAdapter<MovieItem, MoviesAdapter.MovieViewHolder>(MOVIE_COMPARATOR) {
 
+    // LiveData of MovieItem
+     val movieItemLiveData = MutableLiveData<MovieItem>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
         val binding = MovieItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -26,7 +30,7 @@ class MoviesAdapter :
     }
 
 
-    class MovieViewHolder(private val binding: MovieItemBinding) :
+    inner class MovieViewHolder(private val binding: MovieItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         // bind views
@@ -34,6 +38,11 @@ class MoviesAdapter :
             binding.apply {
                 movieTitle.text = movieItem.title
                 movieDate.text = movieItem.release_date
+            }
+
+            // on itemView clicked
+            binding.movieCardItem.setOnClickListener{
+                movieItemLiveData.value =  movieItem
             }
         }
     }
