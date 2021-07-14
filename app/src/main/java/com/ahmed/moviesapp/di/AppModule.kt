@@ -3,6 +3,8 @@ package com.ahmed.moviesapp.di
 import com.ahmed.moviesapp.api.MoviesApi
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
 
 import dagger.Module
 import dagger.Provides
@@ -34,9 +36,6 @@ class AppModule {
 
 
 
-    @Provides
-    @Singleton
-    fun provideFireBaseAuth(): FirebaseAuth = FirebaseAuth.getInstance()
 
 
 
