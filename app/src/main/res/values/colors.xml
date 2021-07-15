@@ -7,4 +7,11 @@
     <color name="teal_700">#FF018786</color>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="fadeBlack">#6A000000</color>
+    <color name="fadeGreen">#153125</color>
+    <color name="green">#188253</color>
+    <color name="progress_bg">#081c22</color>
+    <color name="txt_grey">#9F9F9F</color>
+    <color name="img_grey_placeHolder">#F1F0F0</color>
+
 </resources>

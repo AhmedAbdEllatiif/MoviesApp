@@ -1,15 +1,17 @@
 package com.ahmed.moviesapp.ui.screens.main_screens
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.View
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.ahmed.moviesapp.R
 import com.ahmed.moviesapp.databinding.FragmentMoviesListBinding
 import com.ahmed.moviesapp.ui.adapters.MoviesAdapter
 import com.ahmed.moviesapp.ui.adapters.MoviesLoadAdapter
 import dagger.hilt.android.AndroidEntryPoint
+
 
 @AndroidEntryPoint
 class MoviesListFragment : Fragment(R.layout.fragment_movies_list) {
@@ -33,10 +35,10 @@ class MoviesListFragment : Fragment(R.layout.fragment_movies_list) {
         // Bind with recyclerView
         binding.apply {
             moviesRv.setHasFixedSize(true)
-            moviesRv.layoutManager  = LinearLayoutManager(context)
+            moviesRv.layoutManager  = GridLayoutManager(requireActivity(), 2)
             moviesRv.adapter = adapter.withLoadStateHeaderAndFooter(
-                header = MoviesLoadAdapter{adapter.retry() },
-                footer = MoviesLoadAdapter{adapter.retry()},
+                header = MoviesLoadAdapter { adapter.retry() },
+                footer = MoviesLoadAdapter { adapter.retry() },
             )
         }
 
@@ -50,7 +52,7 @@ class MoviesListFragment : Fragment(R.layout.fragment_movies_list) {
      * */
     private fun observeMoviesPerPage(){
         viewModel.moviesPerPage.observe(viewLifecycleOwner, { pagingMovie ->
-            adapter.submitData(viewLifecycleOwner.lifecycle,pagingMovie)
+            adapter.submitData(viewLifecycleOwner.lifecycle, pagingMovie)
         })
     }
 

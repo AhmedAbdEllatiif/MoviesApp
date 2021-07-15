@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
+        android:usesCleartextTraffic="true"
         android:name=".MyApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -15,15 +16,15 @@
         android:theme="@style/Theme.MoviesApp">
         <activity android:name=".ui.screens.start_app_screens.StartActivityActivity">
 
+
+
+        </activity>
+        <activity android:name=".ui.screens.main_screens.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
-        </activity>
-        <activity android:name=".ui.screens.main_screens.MainActivity">
-
         </activity>
     </application>
 
