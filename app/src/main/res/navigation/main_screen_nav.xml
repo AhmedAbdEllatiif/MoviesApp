@@ -11,12 +11,12 @@
         android:label="fragment_movies_list"
         tools:layout="@layout/fragment_movies_list" >
         <action
-            android:id="@+id/action_moviesListFragment_to_singleMovieFragment"
-            app:destination="@id/singleMovieFragment" />
+            android:id="@+id/action_moviesListFragment_to_movieSingleFragment"
+            app:destination="@id/movieDetailsFragment" />
     </fragment>
     <fragment
-        android:id="@+id/singleMovieFragment"
-        android:name="com.ahmed.moviesapp.ui.screens.main_screens.SingleMovieFragment"
-        android:label="fragment_single_movie"
-        tools:layout="@layout/fragment_single_movie" />
+        android:id="@+id/movieDetailsFragment"
+        android:name="com.ahmed.moviesapp.ui.screens.main_screens.MovieDetailsFragment"
+        android:label="fragment_details_movie"
+        tools:layout="@layout/fragment_details_movie" />
 </navigation>

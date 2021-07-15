@@ -9,5 +9,4 @@
     android:id="@+id/main_fragment_container"
     app:navGraph="@navigation/main_screen_nav">
 
-
 </androidx.fragment.app.FragmentContainerView>

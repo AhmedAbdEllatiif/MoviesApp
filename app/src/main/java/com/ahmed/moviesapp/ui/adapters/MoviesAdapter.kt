@@ -1,21 +1,35 @@
 package com.ahmed.moviesapp.ui.adapters
 
+import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.ViewCompat
 import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.ahmed.moviesapp.R
+
 import com.ahmed.moviesapp.data.MovieItem
+
 import com.ahmed.moviesapp.databinding.MovieItemBinding
 import com.ahmed.moviesapp.databinding.ProgressbarWithTextBinding
+
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterCrop
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 
-class MoviesAdapter :
+import javax.inject.Inject
+
+
+class MoviesAdapter
+@Inject
+constructor(
+    private val baseImageUrl: String
+) :
     PagingDataAdapter<MovieItem, MoviesAdapter.MovieViewHolder>(MOVIE_COMPARATOR) {
+
 
     // LiveData of MovieItem
     val movieItemLiveData = MutableLiveData<MovieItem>()
@@ -54,6 +68,8 @@ class MoviesAdapter :
 
                 // on itemView clicked
                 handleOnItemClicked(movieItem)
+
+
             }
         }
 
@@ -71,7 +87,7 @@ class MoviesAdapter :
         private fun handleMoviePoster(movieItem: MovieItem) {
             binding.apply {
                 Glide.with(itemView)
-                    .load("http://image.tmdb.org/t/p/w300${movieItem.movie_poster}")
+                    .load("$baseImageUrl${movieItem.movie_poster}")
                     .placeholder(R.drawable.rounded_bg)
                     .thumbnail(0.1f)
                     .transform(CenterCrop(), RoundedCorners(15))
@@ -82,9 +98,18 @@ class MoviesAdapter :
         private fun handleOnItemClicked(movieItem: MovieItem) {
             binding.movieCardItem.setOnClickListener {
                 movieItemLiveData.value = movieItem
+                //onMovieItemClicked(movieItem)
+                onItemClicked.onClick(movieItem)
             }
         }
+
     }
+
+    lateinit var onItemClicked:OnItemClicked
+    interface OnItemClicked{
+        fun onClick(movieItem: MovieItem)
+    }
+
 
 
     companion object {
