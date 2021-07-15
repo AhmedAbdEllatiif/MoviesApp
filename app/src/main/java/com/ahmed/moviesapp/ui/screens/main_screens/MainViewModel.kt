@@ -1,12 +1,9 @@
 package com.ahmed.moviesapp.ui.screens.main_screens
 
 import android.util.Log
-import androidx.databinding.Bindable
-import androidx.databinding.Observable
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.switchMap
-import androidx.lifecycle.viewModelScope
+
+import androidx.lifecycle.*
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.ahmed.moviesapp.data.FireBaseRepository
 import com.ahmed.moviesapp.data.MovieItem
@@ -18,6 +15,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,6 +26,13 @@ class MainViewModel @Inject constructor(
 
 
 
+    // Ui State
+    private val _dataUiState: MutableLiveData<LoadingDataState> =
+        MutableLiveData(LoadingDataState.None)
+    val uiUIState: LiveData<LoadingDataState>
+        get() = _dataUiState
+
+
     private val moviesPageLiveData = MutableLiveData(STARTING_PAGE_INDEX)
     val moviesPerPage = moviesPageLiveData.switchMap { requiredPage ->
         repository.getMovies(requiredPage).cachedIn(viewModelScope)
@@ -36,6 +41,7 @@ class MainViewModel @Inject constructor(
     // MovieItemDataLiveData
     val movieItemLiveData = MutableLiveData(MovieItem())
 
+    val errorData = repository.errorData
 
     /**
      * Check if the movie already exists in the database
@@ -72,7 +78,7 @@ class MainViewModel @Inject constructor(
     /**
      * @return  NavMovie to be added to database
      * */
-    private fun prepareNavMovieData(movieItem:MovieItem,updatedCount: Int = 0): NavMovie {
+    private fun prepareNavMovieData(movieItem: MovieItem, updatedCount: Int = 0): NavMovie {
         val userId = firebaseRepo.currentUserId()!!
         val movie =
             if (updatedCount > 0)
@@ -101,7 +107,7 @@ class MainViewModel @Inject constructor(
     /**
      * Update visit count to a NavMovie that already exists in the database
      * */
-    private fun updateMovieVisitCount(movieItem:MovieItem) {
+    private fun updateMovieVisitCount(movieItem: MovieItem) {
         val navMovieRef = firebaseRepo.referenceOnNavMovie(movieItem.id.toString())
         if (navMovieRef != null) {
             navMovieRef.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -109,7 +115,7 @@ class MainViewModel @Inject constructor(
                     val movie = dataSnapshot.getValue(Movie::class.java)
                     if (movie != null) {
                         val updatedCount = movie.count + 1
-                        val updatedNavMovie = prepareNavMovieData(movieItem,updatedCount)
+                        val updatedNavMovie = prepareNavMovieData(movieItem, updatedCount)
                         firebaseRepo.update(updatedNavMovie)
                     }
                 }
@@ -126,7 +132,7 @@ class MainViewModel @Inject constructor(
     /**
      * Write new NavMovie in the database
      * */
-    private fun writeNewClickedMovie(movieItem:MovieItem) {
+    private fun writeNewClickedMovie(movieItem: MovieItem) {
         val navMovie = prepareNavMovieData(movieItem)
         firebaseRepo.writeNewClickedMovie(navMovie).addOnCompleteListener { task ->
             if (task.isSuccessful) {
@@ -141,8 +147,14 @@ class MainViewModel @Inject constructor(
     }
 
 
-    val isUserLoggedIn = firebaseRepo.isUserLoggedIn()
+    /**
+     * To update the ui
+     * */
+    fun updateUiState(uiState: LoadingDataState) {
+        _dataUiState.value = uiState
+    }
 
+    val isUserLoggedIn = firebaseRepo.isUserLoggedIn()
 
 
     companion object {

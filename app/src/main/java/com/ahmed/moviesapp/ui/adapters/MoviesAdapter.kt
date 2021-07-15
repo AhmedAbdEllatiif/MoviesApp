@@ -1,11 +1,9 @@
 package com.ahmed.moviesapp.ui.adapters
 
-import android.util.Log
+
 import android.view.LayoutInflater
-import android.view.View
+
 import android.view.ViewGroup
-import androidx.core.view.ViewCompat
-import androidx.lifecycle.MutableLiveData
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -30,9 +28,6 @@ constructor(
 ) :
     PagingDataAdapter<MovieItem, MoviesAdapter.MovieViewHolder>(MOVIE_COMPARATOR) {
 
-
-    // LiveData of MovieItem
-    val movieItemLiveData = MutableLiveData<MovieItem>()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieViewHolder {
         val binding = MovieItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -97,19 +92,17 @@ constructor(
 
         private fun handleOnItemClicked(movieItem: MovieItem) {
             binding.movieCardItem.setOnClickListener {
-                movieItemLiveData.value = movieItem
-                //onMovieItemClicked(movieItem)
                 onItemClicked.onClick(movieItem)
             }
         }
 
     }
 
-    lateinit var onItemClicked:OnItemClicked
-    interface OnItemClicked{
+    lateinit var onItemClicked: OnItemClicked
+
+    interface OnItemClicked {
         fun onClick(movieItem: MovieItem)
     }
-
 
 
     companion object {

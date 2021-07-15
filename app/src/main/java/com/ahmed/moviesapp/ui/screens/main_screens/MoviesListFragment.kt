@@ -1,10 +1,11 @@
 package com.ahmed.moviesapp.ui.screens.main_screens
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -51,38 +52,45 @@ class MoviesListFragment : Fragment(R.layout.fragment_movies_list) , MoviesAdapt
 
         }
 
+
+
+        observeUiState()
+
         observeMoviesPerPage()
 
-        observerMovieItemLiveData()
-
         adapter.onItemClicked = this
+
+        viewModel.errorData.observe(viewLifecycleOwner, {
+            Log.e("MoviesListFragment", "onViewCreated: ${it.message}" )
+        })
 
     }
 
 
+    private fun observeUiState(){
+        viewModel.uiUIState.observe(viewLifecycleOwner, {
+            when(it){
+                LoadingDataState.DataLoaded -> binding.loadingProgress.visibility = View.GONE
+                is LoadingDataState.Failed -> showError(it.error)
+                LoadingDataState.Loading -> binding.loadingProgress.visibility = View.VISIBLE
+                LoadingDataState.None -> binding.loadingProgress.visibility = View.VISIBLE
+            }
+        })
+    }
 
     /**
      * To observe moviesList per page then submit data to the adapter
      * */
     private fun observeMoviesPerPage(){
+        viewModel.updateUiState(LoadingDataState.Loading)
         viewModel.moviesPerPage.observe(viewLifecycleOwner, { pagingMovie ->
-            adapter.submitData(viewLifecycleOwner.lifecycle, pagingMovie)
-        })
-    }
-
-    /**
-     * To observe the movie item clicked by user
-     * */
-    private fun observerMovieItemLiveData(){
-        adapter.movieItemLiveData.observe(viewLifecycleOwner, { movieItem ->
-            if (movieItem != null) {
-                //viewModel.movieItemLiveData.value = movieItem
-                //viewModel.movieItemLiveData.postValue(movieItem)
-                //viewModel.updateOrWriteNavMovie(movieItem)
+            if (pagingMovie != null) {
+                adapter.submitData(viewLifecycleOwner.lifecycle, pagingMovie)
+                viewModel.updateUiState(LoadingDataState.DataLoaded)
             }
         })
-
     }
+
 
     /**
      * To navigate to MovieDetailsFragment
@@ -100,6 +108,18 @@ class MoviesListFragment : Fragment(R.layout.fragment_movies_list) , MoviesAdapt
         //viewModel.movieItemLiveData.postValue(movieItem)
         navigateToMovieDetailsFragment()
         viewModel.updateOrWriteNavMovie(movieItem)
+    }
+
+
+    /**
+     * To show the error message inside toast
+     * */
+    private fun showError(errorMessage: String) {
+        Toast.makeText(
+            requireContext(),
+            errorMessage,
+            Toast.LENGTH_LONG
+        ).show()
     }
 
 

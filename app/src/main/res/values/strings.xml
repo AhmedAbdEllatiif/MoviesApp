@@ -13,5 +13,7 @@
     <string name="already_have_account">Already have account:Login!</string>
     <string name="not_have_account">Not have an account:Signup!</string>
     <string name="logosplashimage">logoSplashImage</string>
+    <string name="the_movie_app">The Movie App</string>
+    <string name="_2021_copyright_ahmed">© 2021 Copyright| Ahmed</string>
 </resources>
 

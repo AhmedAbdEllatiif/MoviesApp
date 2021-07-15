@@ -37,11 +37,11 @@ class LoginViewModel
     val uiUiState: LiveData<LoginUiState>
         get() = _dataUiState
 
-    // true if any required field is missing
+    // true if any required fields are missing
     private fun isLoginDataMissing() =
         inputEmail.value.isNullOrBlank() || inputPassword.value.isNullOrBlank()
 
-    // true if any required field is missing
+    // true if any required fields are missing
     private fun isSignupDataMissing() =
         inputEmail.value.isNullOrBlank() || inputPassword.value.isNullOrBlank() || inputRe_Password.value.isNullOrBlank()
 

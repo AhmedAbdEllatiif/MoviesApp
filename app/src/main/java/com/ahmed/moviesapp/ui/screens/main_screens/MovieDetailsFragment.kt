@@ -1,19 +1,19 @@
 package com.ahmed.moviesapp.ui.screens.main_screens
 
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.util.Log
-import androidx.fragment.app.Fragment
-
 import android.view.View
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-
-import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.ahmed.moviesapp.R
-
 import com.ahmed.moviesapp.databinding.FragmentDetailsMovieBinding
+import com.ahmed.moviesapp.databinding.ProgressbarWithTextBinding
 import com.ahmed.moviesapp.di.AppModule
+import com.ahmed.moviesapp.ui.adapters.MovieDetailsAdapter
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.load.resource.bitmap.CenterInside
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -27,6 +27,13 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_details_movie) {
     @Named(AppModule.BASE_IMAGE_URL_W500)
     lateinit var baseImageUrl :String
 
+    @Inject
+    @Named(AppModule.BASE_IMAGE_URL_W300)
+    lateinit var smallBaseImageUrl :String
+
+    @Inject
+    lateinit var adapter: MovieDetailsAdapter
+
     // ViewModel
     private val viewModel: MainViewModel by activityViewModels()
 
@@ -39,16 +46,54 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_details_movie) {
 
         // initialize _binding
         _binding = FragmentDetailsMovieBinding.bind(view)
-        Log.e(TAG, "onViewCreated:" )
+        Log.e(TAG, "onViewCreated:")
 
-
+        val progressbarBinding: ProgressbarWithTextBinding = binding.progressBarContainer
 
 
 
         viewModel.movieItemLiveData.observe(viewLifecycleOwner, { movieItem ->
+            Log.e(TAG, "onViewCreated:movieItemTitle: ${movieItem.original_title}")
+            binding.apply {
+                val contents = listOf(
+                    movieItem.plot_synopsis,
+                    movieItem.user_rating.toString(),
+                    movieItem.release_date
+                )
+                adapter.contents = contents
+                moviesDetailsRv.layoutManager = LinearLayoutManager(requireContext())
+                moviesDetailsRv.adapter = adapter
+
+                collapsingToolbar.title = movieItem.original_title
+                // setup Glide request without the into() method
+                // setup Glide request without the into() method
+
+                val thumbnailRequest: RequestBuilder<Drawable> = Glide
+                    .with(requireActivity())
+                    .load("$smallBaseImageUrl${movieItem.movie_poster}")
+
+
+                Glide.with(requireActivity())
+                    .load("$baseImageUrl${movieItem.movie_poster}")
+                    .thumbnail(thumbnailRequest)
+                    .transform(CenterInside())
+                    .into(movieImageDetails)
+            }
+
+            val rounded = String.format("%.0f", movieItem.user_rating * 10f)
+            val ratePercentage = "${rounded}%"
+            progressbarBinding.progressText.text = ratePercentage
+            progressbarBinding.progressBar.progress = (movieItem.user_rating * 10f).toInt()
+            progressbarBinding.progressBar.max = 100
+
+        })
+
+
+        /*viewModel.movieItemLiveData.observe(viewLifecycleOwner, { movieItem ->
             Log.e(TAG, "onViewCreated:movieItemTitle: ${movieItem.original_title}" )
             binding.apply {
                 txtTitle.text = movieItem.original_title
+                collapsingToolbar.title = movieItem.original_title
                 txtOverview.text = movieItem.plot_synopsis
                 txtRate.text = movieItem.user_rating.toString()
                 txtDate.text = movieItem.release_date
@@ -58,7 +103,14 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_details_movie) {
                     .transform(CenterInside())
                     .into(movieImageDetails)
             }
-        })
+
+            val rounded = String.format("%.0f", movieItem.user_rating * 10f)
+            val ratePercentage = "${rounded}%"
+            progressbarBinding.progressText.text = ratePercentage
+            progressbarBinding.progressBar.progress = (movieItem.user_rating * 10f).toInt()
+            progressbarBinding.progressBar.max = 100
+
+        })*/
 
 
 

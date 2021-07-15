@@ -9,7 +9,7 @@
             android:shape="oval"
             android:thickness="4dp"
             android:useLevel="false">
-            <solid android:color="@color/progress_bg" />
+            <solid android:color="@color/darkGreen" />
         </shape>
     </item>
 
