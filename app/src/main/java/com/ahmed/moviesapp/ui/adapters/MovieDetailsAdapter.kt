@@ -23,9 +23,7 @@ class MovieDetailsAdapter @Inject constructor(@Named(AppModule.MovieDetailTitles
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val content = contents[position]
         val title = titles[position]
-        if (content != null && title != null ) {
-            holder.bind(title = title,content = content)
-        }
+        holder.bind(title = title,content = content)
     }
 
     override fun getItemCount(): Int = titles.size

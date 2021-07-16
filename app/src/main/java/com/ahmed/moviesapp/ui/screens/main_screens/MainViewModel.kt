@@ -86,13 +86,13 @@ class MainViewModel @Inject constructor(
                     movieId = movieItem.id.toString(),
                     userId = userId,
                     count = updatedCount,
-                    title = movieItem.original_title!!
+                    title = movieItem.original_title
                 )
             else
                 Movie(
                     movieId = movieItem.id.toString(),
                     userId = userId,
-                    title = movieItem.original_title!!
+                    title = movieItem.original_title
                 )
 
 
