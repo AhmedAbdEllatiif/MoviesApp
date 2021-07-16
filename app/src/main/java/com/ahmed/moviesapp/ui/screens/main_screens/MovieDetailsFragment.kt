@@ -1,8 +1,7 @@
 package com.ahmed.moviesapp.ui.screens.main_screens
 
-import android.graphics.drawable.Drawable
+
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -11,10 +10,8 @@ import com.ahmed.moviesapp.R
 import com.ahmed.moviesapp.databinding.FragmentDetailsMovieBinding
 import com.ahmed.moviesapp.databinding.ProgressbarWithTextBinding
 import com.ahmed.moviesapp.di.ApiModule
-import com.ahmed.moviesapp.di.AppModule
 import com.ahmed.moviesapp.ui.adapters.MovieDetailsAdapter
 import com.bumptech.glide.Glide
-import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.load.resource.bitmap.CenterInside
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -26,11 +23,11 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_details_movie) {
 
     @Inject
     @Named(ApiModule.BASE_IMAGE_URL_W500)
-    lateinit var baseImageUrl :String
+    lateinit var baseImageUrl: String
 
     @Inject
     @Named(ApiModule.BASE_IMAGE_URL_W300)
-    lateinit var smallBaseImageUrl :String
+    lateinit var smallBaseImageUrl: String
 
     @Inject
     lateinit var adapter: MovieDetailsAdapter
@@ -38,134 +35,101 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_details_movie) {
     // ViewModel
     private val viewModel: MainViewModel by activityViewModels()
 
-    // binding
+    // mainBinding
     private var _binding: FragmentDetailsMovieBinding? = null
     private val binding get() = _binding!!
+
+    // ProgressBar binding
+    private val progressBarBinding: ProgressbarWithTextBinding = binding.progressBarContainer
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         // initialize _binding
         _binding = FragmentDetailsMovieBinding.bind(view)
-        Log.e(TAG, "onViewCreated:")
 
-        val progressbarBinding: ProgressbarWithTextBinding = binding.progressBarContainer
+        // observe movie details
+        observeMovieDetails()
+    }
 
 
-
+    private fun observeMovieDetails(){
         viewModel.movieItemLiveData.observe(viewLifecycleOwner, { movieItem ->
-            Log.e(TAG, "onViewCreated:movieItemTitle: ${movieItem.original_title}")
-            binding.apply {
-                val contents = listOf(
-                    movieItem.plot_synopsis,
-                    movieItem.user_rating.toString(),
-                    movieItem.release_date
-                )
-                adapter.contents = contents
-                moviesDetailsRv.layoutManager = LinearLayoutManager(requireContext())
-                moviesDetailsRv.adapter = adapter
+            val movieImage = movieItem.movie_poster
+            val originalTitle = movieItem.original_title
+            val overview = movieItem.plot_synopsis
+            val userRating = movieItem.user_rating
+            val releaseDate = movieItem.release_date
 
-                collapsingToolbar.title = movieItem.original_title
-                // setup Glide request without the into() method
-                // setup Glide request without the into() method
+            // bind the movie title
+            binding.collapsingToolbar.title = originalTitle
 
-                val thumbnailRequest: RequestBuilder<Drawable> = Glide
-                    .with(requireActivity())
-                    .load("$smallBaseImageUrl${movieItem.movie_poster}")
+            // bind movie image
+            bindMovieImage(movieImageUrl = movieImage)
 
+            // bind user rating
+            bindUserRating(userRating = userRating)
 
-                Glide.with(requireActivity())
-                    .load("$baseImageUrl${movieItem.movie_poster}")
-                    .thumbnail(thumbnailRequest)
-                    .transform(CenterInside())
-                    .into(movieImageDetails)
-            }
-
-            val rounded = String.format("%.0f", movieItem.user_rating * 10f)
-            val ratePercentage = "${rounded}%"
-            progressbarBinding.progressText.text = ratePercentage
-            progressbarBinding.progressBar.progress = (movieItem.user_rating * 10f).toInt()
-            progressbarBinding.progressBar.max = 100
+            // bind movie details
+            bindRvWithMovieDetails(
+                overview = overview,
+                userRating = userRating.toString(),
+                releaseDate = releaseDate
+            )
 
         })
-
-
-        /*viewModel.movieItemLiveData.observe(viewLifecycleOwner, { movieItem ->
-            Log.e(TAG, "onViewCreated:movieItemTitle: ${movieItem.original_title}" )
-            binding.apply {
-                txtTitle.text = movieItem.original_title
-                collapsingToolbar.title = movieItem.original_title
-                txtOverview.text = movieItem.plot_synopsis
-                txtRate.text = movieItem.user_rating.toString()
-                txtDate.text = movieItem.release_date
-                Glide.with(requireActivity())
-                    .load("$baseImageUrl${movieItem.movie_poster}")
-                    .thumbnail(0.1f)
-                    .transform(CenterInside())
-                    .into(movieImageDetails)
-            }
-
-            val rounded = String.format("%.0f", movieItem.user_rating * 10f)
-            val ratePercentage = "${rounded}%"
-            progressbarBinding.progressText.text = ratePercentage
-            progressbarBinding.progressBar.progress = (movieItem.user_rating * 10f).toInt()
-            progressbarBinding.progressBar.max = 100
-
-        })*/
-
-
-
-
-        /*val callback: OnBackPressedCallback =
-            object : OnBackPressedCallback(true *//* enabled by default *//*) {
-                override fun handleOnBackPressed() {
-                    Log.e(TAG, "handleOnBackPressed: " )
-
-                    //Log.e(TAG, "handleOnBackPressed: popBackStack >>${findNavController().popBackStack()} ", )
-                    Log.e(TAG, "handleOnBackPressed: navigateUp >>${findNavController().navigateUp()} ", )
-                    //findNavController().navigate(R.id.action_MovieDetailsFragment_to_moviesListFragment)
-                    findNavController().navigateUp()
-
-                }
-            }
-        requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), callback)*/
-
-        /* Glide.with(this)
-             .load("http://image.tmdb.org/t/p/w500/dq18nCTTLpy9PmtzZI6Y2yAgdw5.jpg")
-
-             .into(binding.movieImageDetails)*/
-/* .listener(object : RequestListener<Drawable> {
-                override fun onLoadFailed(
-                    e: GlideException?,
-                    model: Any?,
-                    target: Target<Drawable>?,
-                    isFirstResource: Boolean
-                ): Boolean {
-                     startPostponedEnterTransition()
-                    return false
-                }
-
-                override fun onResourceReady(
-                    resource: Drawable?,
-                    model: Any?,
-                    target: Target<Drawable>?,
-                    dataSource: DataSource?,
-                    isFirstResource: Boolean
-                ): Boolean {
-                    startPostponedEnterTransition()
-                    return false
-                }
-
-            })*/
-
     }
+
+
+    /**
+     * To bind the movie image
+     * */
+    private fun bindMovieImage(movieImageUrl: String) {
+        Glide.with(requireActivity())
+            .load("$baseImageUrl$movieImageUrl")
+            .thumbnail(0.1f)
+            .transform(CenterInside())
+            .into(binding.movieImageDetails)
+    }
+
+
+    /**
+     * To bind userRating to progressBar
+     * */
+    private fun bindUserRating(userRating: Float) {
+        progressBarBinding.apply {
+            val rounded = String.format("%.0f", userRating * 10f)
+            val ratePercentage = "${rounded}%"
+            progressText.text = ratePercentage
+            progressBar.progress = (userRating * 10f).toInt()
+            progressBar.max = 100
+        }
+    }
+
+
+    /**
+     * To bind recyclerView with movieDetails
+     * */
+    private fun bindRvWithMovieDetails(overview: String, userRating: String, releaseDate: String) {
+        binding.apply {
+            val contents = listOf(
+                overview,
+                userRating,
+                releaseDate
+            )
+            adapter.contents = contents
+            moviesDetailsRv.layoutManager = LinearLayoutManager(requireContext())
+            moviesDetailsRv.adapter = adapter
+        }
+    }
+
+
+
+
 
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
     }
 
-    companion object {
-        private const val TAG = "SingleMovieFragment"
-    }
 }
