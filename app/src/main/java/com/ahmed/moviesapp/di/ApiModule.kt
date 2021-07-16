@@ -15,9 +15,9 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 @Module
 object ApiModule {
+
     const val BASE_IMAGE_URL_W300:String = "BASE_IMAGE_URL_W300"
     const val BASE_IMAGE_URL_W500:String = "BASE_IMAGE_URL_500"
-
 
     @Provides
     @Singleton

@@ -5,10 +5,11 @@ import androidx.databinding.Observable
 
 import androidx.lifecycle.*
 import androidx.paging.cachedIn
-import com.ahmed.moviesapp.data.FireBaseRepository
+import com.ahmed.moviesapp.data.MovieDetailsItem
+import com.ahmed.moviesapp.data.repositories.FireBaseRepository
 import com.ahmed.moviesapp.data.MovieItem
 import com.ahmed.moviesapp.data.MoviesPagingSource.Companion.STARTING_PAGE_INDEX
-import com.ahmed.moviesapp.data.Repository
+import com.ahmed.moviesapp.data.repositories.Repository
 import com.ahmed.moviesapp.data.firebaseData.Movie
 import com.ahmed.moviesapp.data.firebaseData.NavMovie
 import com.google.firebase.database.DataSnapshot
@@ -40,7 +41,34 @@ class MainViewModel @Inject constructor(
     // MovieItemDataLiveData
     val movieItemLiveData = MutableLiveData(MovieItem())
 
+    // MovieDetailsItemLiveData
+    val movieDetails = MutableLiveData(listOf<MovieDetailsItem>())
+
     val errorData = repository.errorData
+
+
+    /**
+     * To update the all  movie liveData
+     * */
+    fun sendMovieData(movieItem: MovieItem){
+        movieItemLiveData.value = movieItem
+        updateMovieDetailsData(movieItem)
+    }
+
+    /**
+     * Prepare a list of MovieDetailsItem then update movieDetails liveData
+     * */
+    private fun updateMovieDetailsData(movieItem: MovieItem){
+        val overview = MovieDetailsItem(title = "Overview", content = movieItem.plot_synopsis)
+        val userRating = MovieDetailsItem(title = "Rating", content = movieItem.user_rating.toString())
+        val releaseDate = MovieDetailsItem(title = "Release Data", content = movieItem.release_date)
+        val items = listOf(
+            overview,
+            userRating,
+            releaseDate
+        )
+        movieDetails.value = items
+    }
 
     /**
      * Check if the movie already exists in the database

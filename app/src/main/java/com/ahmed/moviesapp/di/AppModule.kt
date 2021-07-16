@@ -26,33 +26,12 @@ import javax.inject.Singleton
 @Module
 object AppModule {
 
-
-    const val MovieDetailTitles:String = "MovieDetailTitles"
-
-
-
-
-
-
-
     @Provides
     @Singleton
     fun provideThrowable(): MutableLiveData<Throwable> = MutableLiveData()
 
-
-
     @Provides
     @Singleton
     fun provideMoviesAdapter(@Named(ApiModule.BASE_IMAGE_URL_W300) baseImageUrl:String): MoviesAdapter = MoviesAdapter(baseImageUrl)
-
-
-    @Provides
-    @Singleton
-    @Named(MovieDetailTitles)
-    fun provideMovieDetailTitles ():List<String> = listOf("Overview","Rate","Release Date")
-
-    @Provides
-    @Singleton
-    fun provideMovieDetailsAdapter(@Named(MovieDetailTitles) titles:List<String>): MovieDetailsAdapter = MovieDetailsAdapter(titles)
 
 }

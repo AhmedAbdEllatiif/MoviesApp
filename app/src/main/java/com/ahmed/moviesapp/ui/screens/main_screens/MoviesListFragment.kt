@@ -23,7 +23,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class MoviesListFragment : Fragment(R.layout.fragment_movies_list) , MoviesAdapter.OnItemClicked {
+class  MoviesListFragment : Fragment(R.layout.fragment_movies_list) , MoviesAdapter.OnItemClicked {
 
     @Inject
     lateinit var adapter :MoviesAdapter
@@ -150,10 +150,11 @@ class MoviesListFragment : Fragment(R.layout.fragment_movies_list) , MoviesAdapt
      * Impl of onClick item in RecyclerView
      * */
     override fun onClick(movieItem: MovieItem) {
-        viewModel.movieItemLiveData.value = movieItem
-        //viewModel.movieItemLiveData.postValue(movieItem)
-        navigateToMovieDetailsFragment()
+        //viewModel.movieItemLiveData.value = movieItem
+        viewModel.sendMovieData(movieItem)
         viewModel.updateOrWriteNavMovie(movieItem)
+        navigateToMovieDetailsFragment()
+
     }
 
 

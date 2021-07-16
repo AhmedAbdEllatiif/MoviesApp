@@ -15,7 +15,7 @@ class MainFragmentFactory
 constructor() : FragmentFactory() {
 
     override fun instantiate(classLoader: ClassLoader, className: String): Fragment {
-        Log.e("FragmentFactory", "instantiate: className >> $className" )
+        Log.d("FragmentFactory", "instantiate: className >> $className" )
         return when (className) {
 
             LoginSignupFragment::class.java.name -> {
@@ -30,7 +30,6 @@ constructor() : FragmentFactory() {
                 MoviesListFragment()
             }
             else -> super.instantiate(classLoader, className)
-
         }
 
     }

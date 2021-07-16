@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ahmed.moviesapp.R
+import com.ahmed.moviesapp.data.MovieDetailsItem
 import com.ahmed.moviesapp.databinding.FragmentDetailsMovieBinding
 import com.ahmed.moviesapp.databinding.ProgressbarWithTextBinding
 import com.ahmed.moviesapp.di.ApiModule
@@ -29,8 +30,6 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_details_movie) {
     @Named(ApiModule.BASE_IMAGE_URL_W300)
     lateinit var smallBaseImageUrl: String
 
-    @Inject
-    lateinit var adapter: MovieDetailsAdapter
 
     // ViewModel
     private val viewModel: MainViewModel by activityViewModels()
@@ -54,13 +53,11 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_details_movie) {
     }
 
 
-    private fun observeMovieDetails(){
+    private fun observeMovieDetails() {
         viewModel.movieItemLiveData.observe(viewLifecycleOwner, { movieItem ->
             val movieImage = movieItem.movie_poster
             val originalTitle = movieItem.original_title
-            val overview = movieItem.plot_synopsis
             val userRating = movieItem.user_rating
-            val releaseDate = movieItem.release_date
 
             // bind the movie title
             binding.collapsingToolbar.title = originalTitle
@@ -70,14 +67,12 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_details_movie) {
 
             // bind user rating
             bindUserRating(userRating = userRating)
+        })
 
+
+        viewModel.movieDetails.observe(viewLifecycleOwner, { detailsList ->
             // bind movie details
-            bindRvWithMovieDetails(
-                overview = overview,
-                userRating = userRating.toString(),
-                releaseDate = releaseDate
-            )
-
+            bindRvWithMovieDetails(detailsList)
         })
     }
 
@@ -111,21 +106,14 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_details_movie) {
     /**
      * To bind recyclerView with movieDetails
      * */
-    private fun bindRvWithMovieDetails(overview: String, userRating: String, releaseDate: String) {
+    private fun bindRvWithMovieDetails(movieDetails: List<MovieDetailsItem>) {
         binding.apply {
-            val contents = listOf(
-                overview,
-                userRating,
-                releaseDate
-            )
-            adapter.contents = contents
+            val adapter = MovieDetailsAdapter()
+            adapter.items = movieDetails
             moviesDetailsRv.layoutManager = LinearLayoutManager(requireContext())
             moviesDetailsRv.adapter = adapter
         }
     }
-
-
-
 
 
     override fun onDestroy() {

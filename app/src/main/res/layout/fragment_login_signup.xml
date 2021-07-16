@@ -11,28 +11,12 @@
             type="com.ahmed.moviesapp.ui.screens.start_app_screens.LoginViewModel" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/darkGreen"
         android:animateLayoutChanges="true"
         >
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Movies App"
-            android:rotation="-15"
-            android:padding="5dp"
-            android:textColor="@color/white"
-            android:textStyle="bold"
-            android:textSize="55sp"
-            android:layout_marginBottom="25dp"
-            android:layout_marginEnd="50dp"
-            app:layout_constraintBottom_toTopOf="@+id/cardContainer"
-            app:layout_constraintStart_toStartOf="@+id/cardContainer"
-            />
-
         <!--Main Card-->
         <androidx.cardview.widget.CardView
             android:id="@+id/cardContainer"
@@ -45,8 +29,7 @@
             app:cardCornerRadius="15dp"
             app:cardElevation="30dp"
             app:contentPadding="15dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+          >
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -158,6 +141,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
                     android:onClick="@{()->loginViewModel.changeViewLogin_Signup()}"
                     android:text="@string/already_have_account"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -176,7 +161,7 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </FrameLayout>
 
 
 </layout>

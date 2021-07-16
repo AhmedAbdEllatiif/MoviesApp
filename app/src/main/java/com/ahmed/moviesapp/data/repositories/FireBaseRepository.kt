@@ -1,4 +1,4 @@
-package com.ahmed.moviesapp.data
+package com.ahmed.moviesapp.data.repositories
 
 
 import android.util.Log
@@ -89,7 +89,6 @@ class FireBaseRepository
         val movie = navMovie.movie
         val moviesPostValue = movie.toMap()
         ref.updateChildren(moviesPostValue)
-
     }
 
 
