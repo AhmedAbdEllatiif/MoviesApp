@@ -96,7 +96,7 @@ class MoviesListFragment : Fragment(R.layout.fragment_movies_list) , MoviesAdapt
      * To navigate to MovieDetailsFragment
      * */
     private fun navigateToMovieDetailsFragment(){
-        findNavController().navigate(R.id.action_moviesListFragment_to_movieSingleFragment)
+        findNavController().navigate(R.id.action_moviesListFragment_to_movieDetailsFragment)
     }
 
 
