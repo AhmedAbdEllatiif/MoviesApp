@@ -40,13 +40,14 @@ class MovieDetailsFragment : Fragment(R.layout.fragment_details_movie) {
     private val binding get() = _binding!!
 
     // ProgressBar binding
-    private val progressBarBinding: ProgressbarWithTextBinding = binding.progressBarContainer
+    private lateinit var progressBarBinding: ProgressbarWithTextBinding
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         // initialize _binding
         _binding = FragmentDetailsMovieBinding.bind(view)
+        progressBarBinding = binding.progressBarContainer
 
         // observe movie details
         observeMovieDetails()

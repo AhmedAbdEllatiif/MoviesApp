@@ -1,5 +1,6 @@
 package com.ahmed.moviesapp.ui.screens.main_screens
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -16,6 +17,7 @@ import com.ahmed.moviesapp.databinding.FragmentMoviesListBinding
 
 import com.ahmed.moviesapp.ui.adapters.MoviesAdapter
 import com.ahmed.moviesapp.ui.adapters.MoviesLoadAdapter
+import com.ahmed.moviesapp.ui.screens.start_app_screens.StartActivityActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -41,39 +43,39 @@ class MoviesListFragment : Fragment(R.layout.fragment_movies_list) , MoviesAdapt
         // initialize _binding
         _binding = FragmentMoviesListBinding.bind(view)
 
-        // Bind with recyclerView
-        binding.apply {
-            moviesRv.setHasFixedSize(true)
-            moviesRv.layoutManager  = GridLayoutManager(requireActivity(), 2)
-            moviesRv.adapter = adapter.withLoadStateHeaderAndFooter(
-                header = MoviesLoadAdapter { adapter.retry() },
-                footer = MoviesLoadAdapter { adapter.retry() },
-            )
-
-        }
-
-
-
-        observeUiState()
-
-        observeMoviesPerPage()
-
+        // implementation of MoviesAdapter.OnItemClicked
         adapter.onItemClicked = this
 
-        viewModel.errorData.observe(viewLifecycleOwner, {
-            Log.e("MoviesListFragment", "onViewCreated: ${it.message}" )
-        })
+        // To observe changes of ui
+        observeUiState()
+
+        // bind movies list with recyclerView
+        bindMovieListWithRV()
+
+        // To observe moviesList per page then submit data to the adapter
+        observeMoviesPerPage()
+
+        // To observe bad internet connection
+        observeBadInternetConnection()
+
+        //  To logOut
+        submitLogout()
 
     }
 
 
+
+    /**
+     * To observe changes of ui
+     * */
     private fun observeUiState(){
         viewModel.uiUIState.observe(viewLifecycleOwner, {
             when(it){
-                LoadingDataState.DataLoaded -> binding.loadingProgress.visibility = View.GONE
-                is LoadingDataState.Failed -> showError(it.error)
-                LoadingDataState.Loading -> binding.loadingProgress.visibility = View.VISIBLE
-                LoadingDataState.None -> binding.loadingProgress.visibility = View.VISIBLE
+                MainScreenUIState.DataLoaded -> binding.loadingProgress.visibility = View.GONE
+                is MainScreenUIState.Failed -> showError(it.error)
+                MainScreenUIState.Loading -> binding.loadingProgress.visibility = View.VISIBLE
+                MainScreenUIState.None -> binding.loadingProgress.visibility = View.VISIBLE
+                MainScreenUIState.LoggedOut -> navigateToStartActivity()
             }
         })
     }
@@ -82,13 +84,37 @@ class MoviesListFragment : Fragment(R.layout.fragment_movies_list) , MoviesAdapt
      * To observe moviesList per page then submit data to the adapter
      * */
     private fun observeMoviesPerPage(){
-        viewModel.updateUiState(LoadingDataState.Loading)
+        viewModel.updateUiState(MainScreenUIState.Loading)
         viewModel.moviesPerPage.observe(viewLifecycleOwner, { pagingMovie ->
             if (pagingMovie != null) {
                 adapter.submitData(viewLifecycleOwner.lifecycle, pagingMovie)
-                viewModel.updateUiState(LoadingDataState.DataLoaded)
+                viewModel.updateUiState(MainScreenUIState.DataLoaded)
             }
         })
+    }
+
+    /**
+     * To observe bad internet connection
+     * */
+    private fun observeBadInternetConnection(){
+        viewModel.errorData.observe(viewLifecycleOwner, {
+            Log.e("MoviesListFragment", "onViewCreated: ${it.message}" )
+            showError("Bad Internet connection")
+        })
+    }
+
+    /**
+     * bind movies list with recyclerView
+     * */
+    private fun bindMovieListWithRV(){
+        binding.apply {
+            moviesRv.setHasFixedSize(true)
+            moviesRv.layoutManager  = GridLayoutManager(requireActivity(), 2)
+            moviesRv.adapter = adapter.withLoadStateHeaderAndFooter(
+                header = MoviesLoadAdapter { adapter.retry() },
+                footer = MoviesLoadAdapter { adapter.retry() },
+            )
+        }
     }
 
 
@@ -98,6 +124,26 @@ class MoviesListFragment : Fragment(R.layout.fragment_movies_list) , MoviesAdapt
     private fun navigateToMovieDetailsFragment(){
         findNavController().navigate(R.id.action_moviesListFragment_to_movieDetailsFragment)
     }
+
+    /**
+     * To navigate to loginScreen after user logOut
+     * */
+    private fun navigateToStartActivity(){
+        val intent = Intent(requireActivity(),StartActivityActivity::class.java)
+        intent.putExtra("isLoggedOut",true)
+        requireActivity().startActivity(intent)
+        requireActivity().finish()
+    }
+
+    /**
+     * To logOut
+     * */
+    private fun submitLogout(){
+        binding.imgLogout.setOnClickListener {
+            viewModel.logOut()
+        }
+    }
+
 
 
     /**

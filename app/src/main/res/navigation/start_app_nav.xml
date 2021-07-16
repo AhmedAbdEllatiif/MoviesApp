@@ -17,6 +17,10 @@
         tools:layout="@layout/fragment_splash" >
         <action
             android:id="@+id/action_splashFragment_to_login_signupFragment"
-            app:destination="@id/login_signupFragment" />
+            app:destination="@id/login_signupFragment"
+            app:popUpToInclusive="true"
+            app:launchSingleTop="true"
+            app:popUpTo="@id/login_nav"
+            />
     </fragment>
 </navigation>

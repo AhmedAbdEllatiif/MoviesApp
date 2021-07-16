@@ -17,6 +17,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 
+
 class SplashFragment : Fragment(R.layout.fragment_splash) {
 
     // ViewModel
@@ -25,17 +26,34 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // Delay for 1.5sec then navigate to next destination
-        CoroutineScope(Main).launch{
-            delay(1500)
-            if (isUserLoggedIn()){
-                navigateToMainActivity()
-            }else{
-                navigateToLoginSignupScreen()
+
+        if(isUserLoggedOut()){
+            navigateToLoginSignupScreen()
+        }else{
+
+            // Delay for 1.5sec then navigate to next destination
+            CoroutineScope(Main).launch{
+                delay(1500)
+                if (isUserLoggedIn()){
+                    navigateToMainActivity()
+                }else{
+                    navigateToLoginSignupScreen()
+                }
             }
+
+
         }
+
+
     }
 
+
+    /**
+     * @return true if user logged out and return to login screen
+     * */
+    private fun isUserLoggedOut() :Boolean{
+        return requireActivity().intent.hasExtra("isLoggedOut")
+    }
 
     /**
      * @return true if user loggedIn

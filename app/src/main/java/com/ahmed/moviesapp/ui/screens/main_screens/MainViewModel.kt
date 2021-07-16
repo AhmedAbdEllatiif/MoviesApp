@@ -1,9 +1,9 @@
 package com.ahmed.moviesapp.ui.screens.main_screens
 
 import android.util.Log
+import androidx.databinding.Observable
 
 import androidx.lifecycle.*
-import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.ahmed.moviesapp.data.FireBaseRepository
 import com.ahmed.moviesapp.data.MovieItem
@@ -15,21 +15,20 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.ValueEventListener
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val repository: Repository,
     private val firebaseRepo: FireBaseRepository
-) : ViewModel() {
+) : ViewModel() , Observable {
 
 
 
     // Ui State
-    private val _dataUiState: MutableLiveData<LoadingDataState> =
-        MutableLiveData(LoadingDataState.None)
-    val uiUIState: LiveData<LoadingDataState>
+    private val _dataUiState: MutableLiveData<MainScreenUIState> =
+        MutableLiveData(MainScreenUIState.None)
+    val uiUIState: LiveData<MainScreenUIState>
         get() = _dataUiState
 
 
@@ -150,12 +149,27 @@ class MainViewModel @Inject constructor(
     /**
      * To update the ui
      * */
-    fun updateUiState(uiState: LoadingDataState) {
+    fun updateUiState(uiState: MainScreenUIState) {
         _dataUiState.value = uiState
     }
 
 
+    /**
+     * To logout
+     * */
+     fun logOut(){
+        Log.e(TAG, "logOut: " )
+        firebaseRepo.signOut()
+        updateUiState(MainScreenUIState.LoggedOut)
+    }
 
+
+    override fun addOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {
+
+    }
+
+    override fun removeOnPropertyChangedCallback(callback: Observable.OnPropertyChangedCallback?) {
+    }
 
     companion object {
         private const val TAG = "MainViewModel"

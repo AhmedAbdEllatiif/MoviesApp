@@ -25,7 +25,7 @@
             app:contentScrim="@color/purple_700"
             app:expandedTitleTextAppearance="@style/ExpandedAppBar"
             app:layout_scrollFlags="scroll|snap|exitUntilCollapsed"
-            app:title="Ahmed is Awesome">
+            app:title="">
 
             <ImageView
                 android:id="@+id/movieImageDetails"

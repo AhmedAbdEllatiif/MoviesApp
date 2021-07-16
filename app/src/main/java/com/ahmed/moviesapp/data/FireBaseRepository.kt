@@ -92,4 +92,12 @@ class FireBaseRepository
 
     }
 
+
+    /**
+     * To logout
+     * */
+    fun signOut(){
+        auth.signOut()
+    }
+
 }
