@@ -1,6 +1,6 @@
 package com.ahmed.moviesapp.ui.screens.start_app_screens
 
-import android.app.Application
+
 import android.util.Log
 import androidx.databinding.Bindable
 import androidx.databinding.Observable
@@ -9,7 +9,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ahmed.moviesapp.data.FireBaseRepository
 import com.ahmed.moviesapp.data.firebaseData.User
-import com.google.android.gms.tasks.Task
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -29,6 +28,10 @@ class LoginViewModel
     @Bindable
     val inputRe_Password = MutableLiveData<String>()
 
+    // To make auto login
+    val isUserLoggedIn = firebaseRepo.isUserLoggedIn()
+
+    // Used to submit data either as (login or signup)
     var isLogin: Boolean = true
 
 

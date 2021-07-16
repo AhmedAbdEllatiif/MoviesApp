@@ -9,7 +9,7 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
 import com.ahmed.moviesapp.R
 import com.ahmed.moviesapp.databinding.FragmentLoginSignupBinding
 import com.ahmed.moviesapp.ui.screens.main_screens.MainActivity
@@ -20,7 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class LoginSignupFragment : Fragment(R.layout.fragment_login_signup) {
 
     // ViewModel
-    private val viewModel: LoginViewModel by viewModels()
+    private val viewModel: LoginViewModel by activityViewModels()
 
     // binding
     private var _binding: FragmentLoginSignupBinding? = null
@@ -58,10 +58,7 @@ class LoginSignupFragment : Fragment(R.layout.fragment_login_signup) {
             when (state) {
                 is LoginUiState.Failed -> showError(errorMessage = state.error)
 
-                is LoginUiState.None -> {
-                    changeViewLoginAndSignup(isLogin = true)
-                    Log.d(TAG, "observeUiState: None")
-                }
+                is LoginUiState.None -> changeViewLoginAndSignup(isLogin = true)
 
                 is LoginUiState.IsLoginScreen -> changeViewLoginAndSignup(isLogin = state.isLogin)
 
@@ -98,9 +95,9 @@ class LoginSignupFragment : Fragment(R.layout.fragment_login_signup) {
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true /* enabled by default */) {
                 override fun handleOnBackPressed() {
-                    if(!viewModel.isLogin){
+                    if (!viewModel.isLogin) {
                         viewModel.changeViewLogin_Signup()
-                    }else  requireActivity().finish()
+                    } else requireActivity().finish()
                 }
             }
         requireActivity().onBackPressedDispatcher.addCallback(this, callback)

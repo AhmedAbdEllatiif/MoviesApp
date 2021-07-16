@@ -154,7 +154,7 @@ class MainViewModel @Inject constructor(
         _dataUiState.value = uiState
     }
 
-    val isUserLoggedIn = firebaseRepo.isUserLoggedIn()
+
 
 
     companion object {
