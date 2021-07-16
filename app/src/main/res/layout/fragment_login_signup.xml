@@ -11,13 +11,31 @@
             type="com.ahmed.moviesapp.ui.screens.start_app_screens.LoginViewModel" />
     </data>
 
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/darkGreen"
+        android:animateLayoutChanges="true"
         >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Movies App"
+            android:rotation="-15"
+            android:padding="5dp"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="55sp"
+            android:layout_marginBottom="25dp"
+            android:layout_marginEnd="50dp"
+            app:layout_constraintBottom_toTopOf="@+id/cardContainer"
+            app:layout_constraintStart_toStartOf="@+id/cardContainer"
+            />
+
         <!--Main Card-->
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardContainer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -130,6 +148,7 @@
                     android:layout_marginEnd="15dp"
                     android:onClick="@{()->loginViewModel.submitData()}"
                     android:text="@string/signup"
+                    android:textColor="@color/white"
                     android:background="@color/darkGreen"
                     app:layout_constraintTop_toBottomOf="@+id/RePasswordContainer" />
 
@@ -157,7 +176,7 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
-    </FrameLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </layout>
