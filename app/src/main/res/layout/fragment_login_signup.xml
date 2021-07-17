@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.screens.start_app_screens.LoginSignupFragment"
+    >
+
+    <data>
+        <variable
+            name="loginViewModel"
+            type="com.ahmed.moviesapp.ui.screens.start_app_screens.LoginViewModel" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/darkGreen"
+        android:animateLayoutChanges="true"
+        >
+        <!--Main Card-->
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="30dp"
+            android:animateLayoutChanges="true"
+            app:cardBackgroundColor="@color/browser_actions_bg_grey"
+            app:cardCornerRadius="15dp"
+            app:cardElevation="30dp"
+            app:contentPadding="15dp"
+          >
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:animateLayoutChanges="true"
+
+                >
+
+                <!--Email Container-->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/emailContainer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:hint="@string/email"
+                    android:padding="5dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTxtEmail"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:drawablePadding="10dp"
+                        android:inputType="textEmailAddress"
+                        android:maxLines="1"
+                        android:nextFocusUp="@id/passwordContainer"
+                        android:singleLine="true"
+                        android:text="@={loginViewModel.inputEmail}"
+                        android:textColor="@color/black"
+                        tools:ignore="RtlCompat" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!--Password Container-->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/passwordContainer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:hint="@string/password"
+                    android:padding="5dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/emailContainer"
+
+                    >
+                    <!-- android:nextFocusUp="@id/editTxtEmail"-->
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTxtpassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:drawablePadding="10dp"
+
+                        android:inputType="textPassword"
+                        android:maxLines="1"
+                        android:singleLine="true"
+                        android:text="@={loginViewModel.inputPassword}"
+                        android:textColor="@color/black"
+                        tools:ignore="RtlCompat" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!--Re-Password Container-->
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/RePasswordContainer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
+                    android:hint="@string/re_password"
+                    android:padding="5dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/passwordContainer"
+
+                    >
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/editTxtRepassword"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:drawablePadding="10dp"
+
+                        android:inputType="textPassword"
+                        android:maxLines="1"
+                        android:nextFocusUp="@id/btn_submit"
+                        android:singleLine="true"
+                        android:text="@={loginViewModel.inputRe_Password}"
+                        android:textColor="@color/black"
+                        tools:ignore="RtlCompat" />
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <!--Button Submit-->
+                <Button
+                    android:id="@+id/btn_submit"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:onClick="@{()->loginViewModel.submitData()}"
+                    android:text="@string/signup"
+                    android:textColor="@color/white"
+                    android:background="@color/darkGreen"
+                    app:layout_constraintTop_toBottomOf="@+id/RePasswordContainer" />
+
+                <!--Text already Have an account-->
+                <TextView
+                    android:id="@+id/txtAlreadyHaveAccount"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:onClick="@{()->loginViewModel.changeViewLogin_Signup()}"
+                    android:text="@string/already_have_account"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/btn_submit" />
+
+                <!--ProgressBar-->
+                <ProgressBar
+                    android:id="@+id/progressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:indeterminateTint="@color/darkGreen"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/txtAlreadyHaveAccount" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+    </FrameLayout>
+
+
+</layout>
