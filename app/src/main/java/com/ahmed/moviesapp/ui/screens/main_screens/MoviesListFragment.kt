@@ -7,6 +7,7 @@ import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.asLiveData
 
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -30,6 +31,9 @@ import kotlin.random.Random
 class MoviesListFragment : Fragment(R.layout.fragment_movies_list), MoviesAdapter.OnItemClicked {
 
     @Inject
+    lateinit var workRequest: WorkRequest
+
+    @Inject
     lateinit var adapter: MoviesAdapter
 
     // ViewModel
@@ -44,20 +48,10 @@ class MoviesListFragment : Fragment(R.layout.fragment_movies_list), MoviesAdapte
         super.onViewCreated(view, savedInstanceState)
 
         // provide custom configuration
-
-
-        val uploadNavigationWorker =
-            PeriodicWorkRequestBuilder<UploadNavigationWorker>(
-                repeatInterval = PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS,
-                TimeUnit.MILLISECONDS,
-
-            )
-                // Additional configuration
-                .build()
-
+        /*val uploadNavigationWorker = workRequest
         WorkManager
             .getInstance(requireContext())
-            .enqueue(uploadNavigationWorker)
+            .enqueue(uploadNavigationWorker)*/
 
         // initialize _binding
         _binding = FragmentMoviesListBinding.bind(view)
@@ -80,6 +74,16 @@ class MoviesListFragment : Fragment(R.layout.fragment_movies_list), MoviesAdapte
         //  To logOut
         submitLogout()
 
+        viewModel.getAllMovies().asLiveData().observe(viewLifecycleOwner, {
+            if (it != null) {
+                if (it.size > 0) {
+                    it.forEach {
+                        Log.e(TAG, "onViewCreated: Title ${it.movie.title}")
+                    }
+
+                } else Log.e(TAG, "onViewCreated: size smaller than ZERO" )
+            } else Log.e(TAG, "onViewCreated: movies is a null list")
+        })
     }
 
 
@@ -167,12 +171,9 @@ class MoviesListFragment : Fragment(R.layout.fragment_movies_list), MoviesAdapte
      * Impl of onClick item in RecyclerView
      * */
     override fun onClick(movieItem: MovieItem) {
-        //viewModel.movieItemLiveData.value = movieItem
-        viewModel.clickedMovies.add(movieItem)
-        //viewModel.sendMovieData(movieItem)
-        //viewModel.updateOrWriteNavMovie(movieItem)
+        viewModel.insertClickedMovieIntoDataBase(movieItem)
+        viewModel.sendMovieData(movieItem)
         navigateToMovieDetailsFragment()
-
     }
 
 
@@ -191,6 +192,10 @@ class MoviesListFragment : Fragment(R.layout.fragment_movies_list), MoviesAdapte
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
+    }
+
+    companion object {
+        private const val TAG = "MoviesListFragment"
     }
 
 

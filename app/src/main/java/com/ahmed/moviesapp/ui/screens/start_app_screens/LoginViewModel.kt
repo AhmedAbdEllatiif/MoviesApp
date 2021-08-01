@@ -7,15 +7,20 @@ import androidx.databinding.Observable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.ahmed.moviesapp.data.repositories.FireBaseRepository
+import com.ahmed.moviesapp.domain.FireBaseRepository
 import com.ahmed.moviesapp.data.firebaseData.User
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel
 @Inject constructor(
-    private val firebaseRepo: FireBaseRepository
+    private val firebaseRepo: FireBaseRepository,
+    private val auth: FirebaseAuth,
+    private val currentUser: FirebaseUser?,
+    private val isUserLoggedIn: Boolean,
 ) : ViewModel(), Observable {
 
     // Bindable
@@ -29,7 +34,7 @@ class LoginViewModel
     val inputRe_Password = MutableLiveData<String>()
 
     // To make auto login
-    val isUserLoggedIn = firebaseRepo.isUserLoggedIn()
+    val isLoggedIn = isUserLoggedIn
 
     // Used to submit data either as (login or signup)
     var isLogin: Boolean = true
@@ -82,7 +87,7 @@ class LoginViewModel
     private fun login() {
         val email = inputEmail.value
         val password = inputPassword.value
-        firebaseRepo.auth.signInWithEmailAndPassword(email!!, password!!)
+        auth.signInWithEmailAndPassword(email!!, password!!)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     // Sign in success, update UI with the signed-in user's information
@@ -103,7 +108,7 @@ class LoginViewModel
     private fun createNewUser() {
         val email = inputEmail.value
         val password = inputPassword.value
-        firebaseRepo.auth.createUserWithEmailAndPassword(email!!, password!!)
+        auth.createUserWithEmailAndPassword(email!!, password!!)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     addNewUserToDataBase()
@@ -119,7 +124,6 @@ class LoginViewModel
      * @return new User
      * */
     private fun preparedUserData(): User? {
-        val currentUser = firebaseRepo.currentUser()
         if (currentUser != null) {
             val email = currentUser.email
             val id = currentUser.uid

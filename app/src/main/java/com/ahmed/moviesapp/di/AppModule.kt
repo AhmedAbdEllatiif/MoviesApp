@@ -2,9 +2,15 @@ package com.ahmed.moviesapp.di
 
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.Navigator
+import androidx.work.PeriodicWorkRequest
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkRequest
 import com.ahmed.moviesapp.api.MoviesApi
+import com.ahmed.moviesapp.data.repositories.RepositoryImpl
+import com.ahmed.moviesapp.domain.Repository
 import com.ahmed.moviesapp.ui.adapters.MovieDetailsAdapter
 import com.ahmed.moviesapp.ui.adapters.MoviesAdapter
+import com.ahmed.moviesapp.workers.UploadNavigationWorker
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.DatabaseReference
@@ -32,6 +38,24 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideMoviesAdapter(@Named(ApiModule.BASE_IMAGE_URL_W300) baseImageUrl:String): MoviesAdapter = MoviesAdapter(baseImageUrl)
+    fun provideMoviesAdapter(@Named(ApiModule.BASE_IMAGE_URL_W300) baseImageUrl: String): MoviesAdapter =
+        MoviesAdapter(baseImageUrl)
+
+    @Provides
+    @Singleton
+    fun provideRepository(api: MoviesApi, throwable: MutableLiveData<Throwable>): Repository =
+        RepositoryImpl(api,throwable)
+
+
+
+    @Provides
+    @Singleton
+    fun provideWorkerRequestBuilder():WorkRequest = PeriodicWorkRequestBuilder<UploadNavigationWorker>(
+        repeatInterval = PeriodicWorkRequest.MIN_PERIODIC_INTERVAL_MILLIS,
+        TimeUnit.MILLISECONDS,
+
+        ).setInitialDelay(30, TimeUnit.SECONDS)
+        // Additional configuration
+        .build()
 
 }
