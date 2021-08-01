@@ -1,10 +1,13 @@
 package com.ahmed.moviesapp.ui.screens.main_screens
 
+import android.app.Application
+import android.content.Context
 import android.util.Log
 import androidx.databinding.Observable
 
 import androidx.lifecycle.*
 import androidx.paging.cachedIn
+import androidx.work.*
 import com.ahmed.moviesapp.data.MovieDetailsItem
 import com.ahmed.moviesapp.data.repositories.FireBaseRepository
 import com.ahmed.moviesapp.data.MovieItem
@@ -12,11 +15,16 @@ import com.ahmed.moviesapp.data.MoviesPagingSource.Companion.STARTING_PAGE_INDEX
 import com.ahmed.moviesapp.data.repositories.Repository
 import com.ahmed.moviesapp.data.firebaseData.Movie
 import com.ahmed.moviesapp.data.firebaseData.NavMovie
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.random.Random
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
@@ -75,6 +83,8 @@ class MainViewModel @Inject constructor(
      * Exists -> increase the current visitCount by 1
      * NotExists -> add the movie in the database
      * */
+    // MovieItemDataLiveData
+    val clickedMovies = ArrayList<MovieItem>()
     fun updateOrWriteNavMovie(movieItem: MovieItem) {
         val navMovieRef = firebaseRepo.referenceOnNavMovie(movieItem.id.toString())
         navMovieRef?.addListenerForSingleValueEvent(object :
@@ -202,4 +212,8 @@ class MainViewModel @Inject constructor(
     companion object {
         private const val TAG = "MainViewModel"
     }
+
+
+
+
 }
