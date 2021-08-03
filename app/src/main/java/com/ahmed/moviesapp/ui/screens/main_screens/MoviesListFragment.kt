@@ -78,7 +78,8 @@ class MoviesListFragment : Fragment(R.layout.fragment_movies_list), MoviesAdapte
             if (it != null) {
                 if (it.size > 0) {
                     it.forEach {
-                        Log.e(TAG, "onViewCreated: Title ${it.movie.title}")
+                        Log.e(TAG, "onViewCreated: Title >> ${it.movie.title}")
+                        Log.e(TAG, "onViewCreated: Count >> ${it.movie.count}")
                     }
 
                 } else Log.e(TAG, "onViewCreated: size smaller than ZERO" )

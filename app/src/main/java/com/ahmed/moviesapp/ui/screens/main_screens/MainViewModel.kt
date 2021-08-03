@@ -67,7 +67,6 @@ class MainViewModel @Inject constructor(
      * */
     private fun enqueueUploadNavigationWorker(){
     /**
-     * TODO update the viewCount in the local database
      * TODO clear roomDB after successful upload
      * */
         /* val uploadNavigationWorker = workRequest
@@ -132,7 +131,7 @@ class MainViewModel @Inject constructor(
         viewModelScope.launch {
             val navMovie = buildNavMovie(movieItem)
             if (navMovie != null) {
-                roomRepository.insert(navMovie)
+                roomRepository.insertOrUpdate(navMovie)
             }
         }
     }
@@ -156,7 +155,6 @@ class MainViewModel @Inject constructor(
                 title = movieItem.original_title,
                 userId = currentUserId
             )
-            Log.e(TAG, "buildNavMovie: currentUserId is >>> Null <<<")
             return NavMovie(
                 movieId = movieItem.id.toString(),
                 userId = currentUserId,

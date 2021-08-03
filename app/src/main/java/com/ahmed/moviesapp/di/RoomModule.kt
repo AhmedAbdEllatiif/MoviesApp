@@ -22,6 +22,7 @@ object RoomModule {
     @Singleton
     fun provideDatabase(app: Application) : MovieDatabase =
         Room.databaseBuilder(app,MovieDatabase::class.java,"Movie_Database_name")
+            .fallbackToDestructiveMigration() // If you want your database to be cleared when you upgrade the version
             .build()
 
     @Provides

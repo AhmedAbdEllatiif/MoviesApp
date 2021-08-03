@@ -10,8 +10,7 @@ data class NavMovie(
     @PrimaryKey
     val movieId: String,
     var movie: Movie,
-    val userId: String
-
+    val userId: String,
 )
 
 data class Movie(
