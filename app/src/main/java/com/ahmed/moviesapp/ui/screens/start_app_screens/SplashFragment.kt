@@ -59,7 +59,7 @@ class SplashFragment : Fragment(R.layout.fragment_splash) {
      * @return true if user loggedIn
      * */
     private fun isUserLoggedIn():Boolean{
-       return viewModel.isUserLoggedIn
+       return viewModel.isLoggedIn
     }
 
     /**

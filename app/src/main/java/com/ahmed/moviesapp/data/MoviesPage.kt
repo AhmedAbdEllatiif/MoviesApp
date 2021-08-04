@@ -1,5 +1,7 @@
 package com.ahmed.moviesapp.data
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
 /**
@@ -23,7 +25,9 @@ data class MoviesPage(
 /**
  * MoviesList is the result a list movies of every single page
  * */
+
 data class MovieItem(
+
     val id: Int = 0,
 
     val original_title: String = "",

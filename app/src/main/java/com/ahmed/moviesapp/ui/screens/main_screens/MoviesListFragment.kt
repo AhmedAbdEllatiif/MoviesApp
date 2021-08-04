@@ -10,6 +10,7 @@ import androidx.fragment.app.activityViewModels
 
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.work.*
 
 import com.ahmed.moviesapp.R
 import com.ahmed.moviesapp.data.MovieItem
@@ -23,18 +24,20 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class  MoviesListFragment : Fragment(R.layout.fragment_movies_list) , MoviesAdapter.OnItemClicked {
+class MoviesListFragment : Fragment(R.layout.fragment_movies_list), MoviesAdapter.OnItemClicked {
 
     @Inject
-    lateinit var adapter :MoviesAdapter
+    lateinit var workRequest: WorkRequest
+
+    @Inject
+    lateinit var adapter: MoviesAdapter
 
     // ViewModel
     private val viewModel: MainViewModel by activityViewModels()
 
     // binding
-    private var _binding : FragmentMoviesListBinding? = null
+    private var _binding: FragmentMoviesListBinding? = null
     private val binding get() = _binding!!
-
 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -60,17 +63,15 @@ class  MoviesListFragment : Fragment(R.layout.fragment_movies_list) , MoviesAdap
 
         //  To logOut
         submitLogout()
-
     }
-
 
 
     /**
      * To observe changes of ui
      * */
-    private fun observeUiState(){
+    private fun observeUiState() {
         viewModel.uiUIState.observe(viewLifecycleOwner, {
-            when(it){
+            when (it) {
                 MainScreenUIState.DataLoaded -> binding.loadingProgress.visibility = View.GONE
                 is MainScreenUIState.Failed -> showError(it.error)
                 MainScreenUIState.Loading -> binding.loadingProgress.visibility = View.VISIBLE
@@ -83,7 +84,7 @@ class  MoviesListFragment : Fragment(R.layout.fragment_movies_list) , MoviesAdap
     /**
      * To observe moviesList per page then submit data to the adapter
      * */
-    private fun observeMoviesPerPage(){
+    private fun observeMoviesPerPage() {
         viewModel.updateUiState(MainScreenUIState.Loading)
         viewModel.moviesPerPage.observe(viewLifecycleOwner, { pagingMovie ->
             if (pagingMovie != null) {
@@ -96,9 +97,9 @@ class  MoviesListFragment : Fragment(R.layout.fragment_movies_list) , MoviesAdap
     /**
      * To observe bad internet connection
      * */
-    private fun observeBadInternetConnection(){
+    private fun observeBadInternetConnection() {
         viewModel.errorData.observe(viewLifecycleOwner, {
-            Log.e("MoviesListFragment", "onViewCreated: ${it.message}" )
+            Log.e("MoviesListFragment", "onViewCreated: ${it.message}")
             showError("Bad Internet connection")
         })
     }
@@ -106,10 +107,10 @@ class  MoviesListFragment : Fragment(R.layout.fragment_movies_list) , MoviesAdap
     /**
      * bind movies list with recyclerView
      * */
-    private fun bindMovieListWithRV(){
+    private fun bindMovieListWithRV() {
         binding.apply {
             moviesRv.setHasFixedSize(true)
-            moviesRv.layoutManager  = GridLayoutManager(requireActivity(), 2)
+            moviesRv.layoutManager = GridLayoutManager(requireActivity(), 2)
             moviesRv.adapter = adapter.withLoadStateHeaderAndFooter(
                 header = MoviesLoadAdapter { adapter.retry() },
                 footer = MoviesLoadAdapter { adapter.retry() },
@@ -121,16 +122,16 @@ class  MoviesListFragment : Fragment(R.layout.fragment_movies_list) , MoviesAdap
     /**
      * To navigate to MovieDetailsFragment
      * */
-    private fun navigateToMovieDetailsFragment(){
+    private fun navigateToMovieDetailsFragment() {
         findNavController().navigate(R.id.action_moviesListFragment_to_movieDetailsFragment)
     }
 
     /**
      * To navigate to loginScreen after user logOut
      * */
-    private fun navigateToStartActivity(){
-        val intent = Intent(requireActivity(),StartActivityActivity::class.java)
-        intent.putExtra("isLoggedOut",true)
+    private fun navigateToStartActivity() {
+        val intent = Intent(requireActivity(), StartActivityActivity::class.java)
+        intent.putExtra("isLoggedOut", true)
         requireActivity().startActivity(intent)
         requireActivity().finish()
     }
@@ -138,23 +139,20 @@ class  MoviesListFragment : Fragment(R.layout.fragment_movies_list) , MoviesAdap
     /**
      * To logOut
      * */
-    private fun submitLogout(){
+    private fun submitLogout() {
         binding.imgLogout.setOnClickListener {
             viewModel.logOut()
         }
     }
 
 
-
     /**
      * Impl of onClick item in RecyclerView
      * */
     override fun onClick(movieItem: MovieItem) {
-        //viewModel.movieItemLiveData.value = movieItem
+        viewModel.insertClickedMovieIntoDataBase(movieItem)
         viewModel.sendMovieData(movieItem)
-        viewModel.updateOrWriteNavMovie(movieItem)
         navigateToMovieDetailsFragment()
-
     }
 
 
@@ -174,7 +172,6 @@ class  MoviesListFragment : Fragment(R.layout.fragment_movies_list) , MoviesAdap
         super.onDestroy()
         _binding = null
     }
-
 
 
 }

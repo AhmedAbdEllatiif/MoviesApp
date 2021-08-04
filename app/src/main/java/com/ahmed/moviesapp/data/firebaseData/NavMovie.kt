@@ -1,11 +1,16 @@
 package com.ahmed.moviesapp.data.firebaseData
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
+
+@Entity(tableName = "MovieTable")
 data class NavMovie(
-    val movie: Movie,
-    val userId: String,
-    val movieId: String
 
+    @PrimaryKey
+    val movieId: String,
+    var movie: Movie,
+    val userId: String,
 )
 
 data class Movie(
