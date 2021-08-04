@@ -1,6 +1,5 @@
 package com.ahmed.moviesapp.domain
 
-import com.ahmed.moviesapp.data.firebaseData.Movie
 import com.ahmed.moviesapp.data.firebaseData.NavMovie
 import kotlinx.coroutines.flow.Flow
 
@@ -11,7 +10,6 @@ interface RoomRepository
      * @return all movies from roomDb
      * */
     fun getAllMovies(): Flow<List<NavMovie>>
-
 
     /**
      * To insert new navMovie or update the count of exists one
@@ -32,11 +30,18 @@ interface RoomRepository
     /**
      * To update the count
      * */
-    suspend fun updateCount(movie: Movie)
+    suspend fun updateCount(navMovie: NavMovie)
+
+    /**
+     * To delete a specific movie from db
+     * */
+    suspend fun delete(navMovie: NavMovie)
 
     /**
      * To delete all movies from roomDb
      * */
     suspend fun deleteAllMovies()
+
+
 
 }

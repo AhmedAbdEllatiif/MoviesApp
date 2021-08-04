@@ -1,5 +1,6 @@
 package com.ahmed.moviesapp.di
 
+import com.ahmed.moviesapp.Utils
 import com.ahmed.moviesapp.api.MoviesApi
 import dagger.Module
 import dagger.Provides
@@ -16,18 +17,19 @@ import javax.inject.Singleton
 @Module
 object ApiModule {
 
-    const val BASE_IMAGE_URL_W300:String = "BASE_IMAGE_URL_W300"
-    const val BASE_IMAGE_URL_W500:String = "BASE_IMAGE_URL_500"
+
 
     @Provides
     @Singleton
-    @Named(BASE_IMAGE_URL_W300)
+    @Named(Utils.BASE_IMAGE_URL_W300)
     fun provideBaseImageUrlW300():String = "http://image.tmdb.org/t/p/w300"
 
     @Provides
     @Singleton
-    @Named(BASE_IMAGE_URL_W500)
+    @Named(Utils.BASE_IMAGE_URL_W500)
     fun provideBaseImageUrlW500():String = "http://image.tmdb.org/t/p/w500"
+
+
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient = OkHttpClient.Builder()

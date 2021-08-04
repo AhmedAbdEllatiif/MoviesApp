@@ -7,7 +7,6 @@ import android.view.View
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.asLiveData
 
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
@@ -20,11 +19,8 @@ import com.ahmed.moviesapp.databinding.FragmentMoviesListBinding
 import com.ahmed.moviesapp.ui.adapters.MoviesAdapter
 import com.ahmed.moviesapp.ui.adapters.MoviesLoadAdapter
 import com.ahmed.moviesapp.ui.screens.start_app_screens.StartActivityActivity
-import com.ahmed.moviesapp.workers.UploadNavigationWorker
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import kotlin.random.Random
 
 
 @AndroidEntryPoint
@@ -47,12 +43,6 @@ class MoviesListFragment : Fragment(R.layout.fragment_movies_list), MoviesAdapte
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        // provide custom configuration
-        /*val uploadNavigationWorker = workRequest
-        WorkManager
-            .getInstance(requireContext())
-            .enqueue(uploadNavigationWorker)*/
-
         // initialize _binding
         _binding = FragmentMoviesListBinding.bind(view)
 
@@ -73,18 +63,6 @@ class MoviesListFragment : Fragment(R.layout.fragment_movies_list), MoviesAdapte
 
         //  To logOut
         submitLogout()
-
-        viewModel.getAllMovies().asLiveData().observe(viewLifecycleOwner, {
-            if (it != null) {
-                if (it.size > 0) {
-                    it.forEach {
-                        Log.e(TAG, "onViewCreated: Title >> ${it.movie.title}")
-                        Log.e(TAG, "onViewCreated: Count >> ${it.movie.count}")
-                    }
-
-                } else Log.e(TAG, "onViewCreated: size smaller than ZERO" )
-            } else Log.e(TAG, "onViewCreated: movies is a null list")
-        })
     }
 
 
@@ -193,10 +171,6 @@ class MoviesListFragment : Fragment(R.layout.fragment_movies_list), MoviesAdapte
     override fun onDestroy() {
         super.onDestroy()
         _binding = null
-    }
-
-    companion object {
-        private const val TAG = "MoviesListFragment"
     }
 
 

@@ -1,6 +1,7 @@
 package com.ahmed.moviesapp.data.repositories
 
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import com.ahmed.moviesapp.data.firebaseData.Movie
 import com.ahmed.moviesapp.data.firebaseData.NavMovie
 import com.ahmed.moviesapp.data.firebaseData.User
@@ -17,22 +18,18 @@ class FireBaseRepositoryImpl(
     private val currentUserId: String?,
     private val usersRef: DatabaseReference,
     private val navRef: DatabaseReference,
+    private val syncedNavMovie: MutableLiveData<NavMovie>,
 ) : FireBaseRepository {
 
 
     /**
-     * @return DatabaseReference on NavMovie by its id
+     * To check if the movie already exists in firebaseDb
+     * True >> update visit count
+     * False >> write new movie in firebaseDb
      * */
-    private fun referenceOnNavMovie(movieId: String): DatabaseReference? {
-        if (currentUserId != null) {
-            return navRef.child(currentUserId).child(movieId)
-        }
-        return null
-    }
-
-
     override fun updateOrWriteNavMovie(navMovie: NavMovie) {
-        val navMovieRef = referenceOnNavMovie(navMovie.movieId)
+        val navMovieRef = referenceOnMovie(navMovie.movieId)
+
         navMovieRef?.addListenerForSingleValueEvent(object :
             ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -41,48 +38,13 @@ class FireBaseRepositoryImpl(
                     updateMovieVisitCount(navMovie)
                 else
                     writeNewClickedMovie(navMovie)
-
-
             }
 
-            override fun onCancelled(error: DatabaseError) {
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e(TAG, "updateOrWriteNavMovie onCancelled: ${databaseError.message}")
             }
         })
     }
-
-    private fun isNavMovieExistsInDataBase(snapshot: DataSnapshot): Boolean {
-        return snapshot.exists()
-    }
-
-
-    private fun updateMovieVisitCount(navMovie: NavMovie) {
-        val navMovieRef = referenceOnNavMovie(navMovie.movieId)
-        if (navMovieRef != null) {
-            navMovieRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    val movie = dataSnapshot.getValue(Movie::class.java)
-                    if (movie != null) {
-                        val updatedCount = movie.count + navMovie.movie.count
-                        val moviee =   Movie(
-                            movieId = navMovie.movieId,
-                            userId = currentUserId!!,
-                            count = updatedCount,
-                            title = navMovie.movie.title
-                        )
-                        navMovie.movie = moviee
-                        update(navMovie)
-                    }
-                }
-
-                override fun onCancelled(databaseError: DatabaseError) {}
-            })
-        } else {
-            Log.e(TAG, "updateMovieVisitCount: navMovieRef is null")
-        }
-
-
-    }
-
 
 
     /**
@@ -92,12 +54,74 @@ class FireBaseRepositoryImpl(
 
 
     /**
+     * To logout
+     * */
+    override fun signOut() {
+        auth.signOut()
+    }
+
+
+    /**
+     * @return DatabaseReference on NavMovie by its id
+     * */
+    private fun referenceOnMovie(movieId: String): DatabaseReference? {
+        if (currentUserId != null) {
+            return navRef.child(currentUserId).child(movieId)
+        }
+        return null
+    }
+
+
+    /**
+     * @return true if movie already exists in firebaseDb
+     * */
+    private fun isNavMovieExistsInDataBase(snapshot: DataSnapshot): Boolean {
+        return snapshot.exists()
+    }
+
+
+    /**
+     * To update visit count
+     * */
+    private fun updateMovieVisitCount(navMovie: NavMovie) {
+        val navMovieRef = referenceOnMovie(navMovie.movieId)
+        navMovieRef?.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val movie = dataSnapshot.getValue(Movie::class.java)
+                if (movie != null) {
+
+                    val updatedCount = movie.count + navMovie.movie.count
+
+                    navMovie.movie = Movie(
+                        movieId = navMovie.movieId,
+                        userId = currentUserId!!,
+                        count = updatedCount,
+                        title = navMovie.movie.title
+                    )
+                    update(navMovie)
+
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                Log.e(TAG, "updateMovieVisitCount onCancelled: ${databaseError.message}")
+            }
+        })
+
+    }
+
+
+    /**
      * To write a clicked movie in database
      * */
     fun writeNewClickedMovie(navMovie: NavMovie): Task<Void> {
         return navRef.child(navMovie.userId)
             .child(navMovie.movieId)
-            .setValue(navMovie.movie)
+            .setValue(navMovie.movie).addOnCompleteListener {
+                if (it.isSuccessful) {
+                    updateSyncedMovie(navMovie)
+                }
+            }
     }
 
 
@@ -105,19 +129,25 @@ class FireBaseRepositoryImpl(
      * To update visitCount of NavMovie
      * */
     fun update(navMovie: NavMovie) {
-        val ref = navRef.child(navMovie.userId)
-            .child(navMovie.movieId)
+        val movieRef = navRef.child(navMovie.userId).child(navMovie.movieId)
         val movie = navMovie.movie
         val moviesPostValue = movie.toMap()
-        ref.updateChildren(moviesPostValue)
+        movieRef.updateChildren(moviesPostValue)
+
+        val updateMovieTask = movieRef.updateChildren(moviesPostValue)
+        updateMovieTask.addOnCompleteListener {
+            if (it.isSuccessful) {
+                updateSyncedMovie(navMovie)
+            }
+        }
+
     }
 
-
     /**
-     * To logout
+     * To update synced movie
      * */
-    override fun signOut() {
-        auth.signOut()
+    private fun updateSyncedMovie(navMovie: NavMovie) {
+        syncedNavMovie.value = navMovie
     }
 
 

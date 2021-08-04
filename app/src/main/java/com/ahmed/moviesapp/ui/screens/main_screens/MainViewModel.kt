@@ -15,29 +15,32 @@ import com.ahmed.moviesapp.data.MoviesPagingSource.Companion.STARTING_PAGE_INDEX
 import com.ahmed.moviesapp.domain.Repository
 import com.ahmed.moviesapp.data.firebaseData.Movie
 import com.ahmed.moviesapp.data.firebaseData.NavMovie
-import com.ahmed.moviesapp.di.FirebaseModule
 import com.ahmed.moviesapp.domain.RoomRepository
+import com.google.firebase.auth.FirebaseAuth
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-import javax.inject.Named
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val repository: Repository,
     private val firebaseRepo: FireBaseRepository,
     private val roomRepository: RoomRepository,
-    @Named(FirebaseModule.userID) private val currentUserId: String?,
+    private val auth: FirebaseAuth,
     private val workRequest: WorkRequest,
-    @ApplicationContext appContext: Context,
-    val errorData:MutableLiveData<Throwable>
+    @ApplicationContext val appContext: Context,
+    private val syncedNavMovie: MutableLiveData<NavMovie>,
+    val errorData: MutableLiveData<Throwable>
 ) : ViewModel(), Observable {
 
 
     init {
         enqueueUploadNavigationWorker()
+        observeSyncedNavMovie()
     }
 
 
@@ -47,6 +50,24 @@ class MainViewModel @Inject constructor(
     val uiUIState: LiveData<MainScreenUIState>
         get() = _dataUiState
 
+    private fun currentUserId():String?{
+        if(auth.currentUser != null){
+            return auth.currentUser!!.uid
+        }
+        return null
+    }
+
+
+
+    private fun observeSyncedNavMovie() {
+        viewModelScope.launch(Dispatchers.IO) {
+            syncedNavMovie.asFlow().collect {
+                if(it!=null){
+                    roomRepository.delete(it)
+                }
+            }
+        }
+    }
 
     /**
      * Load movies from paging
@@ -58,6 +79,7 @@ class MainViewModel @Inject constructor(
 
     // MovieItemDataLiveData
     val movieItemLiveData = MutableLiveData(MovieItem())
+
     // MovieDetailsItemLiveData
     val movieDetails = MutableLiveData(listOf<MovieDetailsItem>())
 
@@ -65,14 +87,15 @@ class MainViewModel @Inject constructor(
     /**
      * To enqueue uploadNavigationWorker
      * */
-    private fun enqueueUploadNavigationWorker(){
-    /**
-     * TODO clear roomDB after successful upload
-     * */
-        /* val uploadNavigationWorker = workRequest
+    private fun enqueueUploadNavigationWorker() {
+        /**
+         * TODO clear roomDB after successful upload
+         * */
+        val uploadNavigationWorker = workRequest
         WorkManager
             .getInstance(appContext)
-            .enqueue(uploadNavigationWorker)*/
+            .enqueue(uploadNavigationWorker)
+
     }
 
 
@@ -82,8 +105,6 @@ class MainViewModel @Inject constructor(
     fun updateUiState(uiState: MainScreenUIState) {
         _dataUiState.value = uiState
     }
-
-
 
 
     /**
@@ -109,14 +130,6 @@ class MainViewModel @Inject constructor(
         )
         movieDetails.value = items
     }
-
-
-
-
-
-
-
-
 
 
     //*************************************************************************************************************\\
@@ -149,21 +162,22 @@ class MainViewModel @Inject constructor(
      * @param movieItem
      * */
     private fun buildNavMovie(movieItem: MovieItem): NavMovie? {
-        if (currentUserId != null) {
+        val userId = currentUserId()
+        if (userId != null) {
             val movie = Movie(
                 movieId = movieItem.id.toString(),
                 title = movieItem.original_title,
-                userId = currentUserId
+                userId = userId
             )
             return NavMovie(
                 movieId = movieItem.id.toString(),
-                userId = currentUserId,
+                userId = userId,
                 movie = movie
             )
         }
+        Log.e(TAG, "buildNavMovie: currentUserId is null")
         return null
     }
-
 
 
     //*************************************************************************************************************\\
@@ -179,8 +193,6 @@ class MainViewModel @Inject constructor(
         firebaseRepo.signOut()
         updateUiState(MainScreenUIState.LoggedOut)
     }
-
-
 
 
     //*************************************************************************************************************\\

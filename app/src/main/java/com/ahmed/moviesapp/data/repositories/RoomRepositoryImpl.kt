@@ -1,7 +1,6 @@
 package com.ahmed.moviesapp.data.repositories
 
 import android.util.Log
-import com.ahmed.moviesapp.data.firebaseData.Movie
 import com.ahmed.moviesapp.data.firebaseData.NavMovie
 import com.ahmed.moviesapp.data.roomdb.MovieDao
 import com.ahmed.moviesapp.domain.RoomRepository
@@ -25,7 +24,7 @@ class RoomRepositoryImpl(
     override suspend fun insertOrUpdate(navMovie: NavMovie) {
         val loadedMovie = loadSingleMovie(navMovie.movieId)
         if (loadedMovie != null) {
-            updateCount(loadedMovie.movie)
+            updateCount(loadedMovie)
         } else {
             insert(navMovie)
         }
@@ -35,12 +34,8 @@ class RoomRepositoryImpl(
      * To fetch a single navMovie from the roomDb by it's id
      * */
     override suspend fun loadSingleMovie(movieId: String): NavMovie? {
-        val navMovie = moviesDao.loadSingleMovie(movieId)
-        if (navMovie != null) {
-            navMovie.movie.count = navMovie.movie.count + 1
-            return navMovie
-        }
-        return null
+        return moviesDao.loadSingleMovie(movieId)
+
     }
 
 
@@ -56,9 +51,11 @@ class RoomRepositoryImpl(
 
     /**
      * To update the count of
-     * @param movie
+     * @param navMovie
      * */
-    override suspend fun updateCount(movie: Movie) {
+    override suspend fun updateCount(navMovie: NavMovie) {
+        navMovie.movie.count = navMovie.movie.count + 1
+        val movie = navMovie.movie
         moviesDao.updateCount(movie, movie.movieId)
         Log.d(TAG, "updateCount: ${movie.title}")
     }
@@ -71,6 +68,9 @@ class RoomRepositoryImpl(
         moviesDao.deleteAll()
     }
 
+    override suspend fun delete(navMovie: NavMovie) {
+        moviesDao.delete(navMovie)
+    }
 
     companion object {
         private const val TAG = "RoomRepositoryImpl"

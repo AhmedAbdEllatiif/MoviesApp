@@ -1,5 +1,7 @@
 package com.ahmed.moviesapp.di
 
+import androidx.lifecycle.MutableLiveData
+import com.ahmed.moviesapp.data.firebaseData.NavMovie
 import com.ahmed.moviesapp.data.repositories.FireBaseRepositoryImpl
 import com.ahmed.moviesapp.domain.FireBaseRepository
 import com.google.firebase.auth.FirebaseAuth
@@ -18,9 +20,15 @@ import javax.inject.Singleton
 @Module
 object FirebaseModule {
 
-    const val usersReference: String = "UsersReference"
-    const val navigationReference: String = "NavigationReference"
+    private const val usersReference: String = "UsersReference"
+    private const val navigationReference: String = "NavigationReference"
     const val userID: String = "userId"
+
+
+    // To have an access on the Synced movie with firebase
+    @Provides
+    @Singleton
+    fun provideSyncedNavMovieWithFirebase(): MutableLiveData<NavMovie> = MutableLiveData()
 
     @Provides
     @Singleton
@@ -66,8 +74,9 @@ object FirebaseModule {
         auth: FirebaseAuth,
         @Named(userID) userId: String?,
         @Named(usersReference) usersRef: DatabaseReference,
-        @Named(navigationReference) navRef: DatabaseReference
-    ): FireBaseRepository = FireBaseRepositoryImpl(auth, userId, usersRef, navRef)
+        @Named(navigationReference) navRef: DatabaseReference,
+        syncedNavMovie : MutableLiveData<NavMovie>
+    ): FireBaseRepository = FireBaseRepositoryImpl(auth, userId, usersRef, navRef,syncedNavMovie)
 
 
 }

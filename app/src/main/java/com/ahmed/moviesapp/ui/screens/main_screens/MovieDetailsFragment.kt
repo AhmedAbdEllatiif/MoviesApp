@@ -7,10 +7,10 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ahmed.moviesapp.R
+import com.ahmed.moviesapp.Utils
 import com.ahmed.moviesapp.data.MovieDetailsItem
 import com.ahmed.moviesapp.databinding.FragmentDetailsMovieBinding
 import com.ahmed.moviesapp.databinding.ProgressbarWithTextBinding
-import com.ahmed.moviesapp.di.ApiModule
 import com.ahmed.moviesapp.ui.adapters.MovieDetailsAdapter
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.CenterInside
@@ -23,11 +23,11 @@ import javax.inject.Named
 class MovieDetailsFragment : Fragment(R.layout.fragment_details_movie) {
 
     @Inject
-    @Named(ApiModule.BASE_IMAGE_URL_W500)
+    @Named(Utils.BASE_IMAGE_URL_W500)
     lateinit var baseImageUrl: String
 
     @Inject
-    @Named(ApiModule.BASE_IMAGE_URL_W300)
+    @Named(Utils.BASE_IMAGE_URL_W300)
     lateinit var smallBaseImageUrl: String
 
 
